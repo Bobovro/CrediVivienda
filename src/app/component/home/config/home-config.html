@@ -1,1 +1,69 @@
-<p>config works!</p>
+<div class="wrap">
+  <div class="head">
+    <h2>Configuración</h2>
+    <p>Define valores por defecto para la simulación MiVivienda.</p>
+  </div>
+
+  <div class="card">
+    <form [formGroup]="form" class="grid">
+      <div>
+        <label>Moneda por defecto</label>
+        <select formControlName="monedaDefault">
+          <option value="PEN">Soles (PEN)</option>
+          <option value="USD">Dólares (USD)</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tipo de tasa por defecto</label>
+        <select formControlName="tipoTasaDefault">
+          <option value="EFECTIVA">Efectiva</option>
+          <option value="NOMINAL">Nominal</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Capitalización (solo si nominal)</label>
+        <select formControlName="capitalizacion">
+          <option value="DIARIA">Diaria</option>
+          <option value="MENSUAL">Mensual</option>
+          <option value="ANUAL">Anual</option>
+        </select>
+
+        <small *ngIf="form.get('tipoTasaDefault')?.value !== 'NOMINAL'">
+          Se usa solo cuando la tasa es nominal.
+        </small>
+      </div>
+
+      <div>
+        <label>Tipo de gracia</label>
+        <select formControlName="graciaTipo">
+          <option value="NINGUNA">Ninguna</option>
+          <option value="TOTAL">Total</option>
+          <option value="PARCIAL">Parcial</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Períodos de gracia (0–60)</label>
+        <input type="number" formControlName="graciaPeriodos" />
+
+        <small
+          *ngIf="
+            form.get('graciaPeriodos')?.touched &&
+            form.get('graciaPeriodos')?.invalid
+          "
+        >
+          Número inválido.
+        </small>
+      </div>
+    </form>
+
+    <div class="actions">
+      <button type="button" (click)="save()">Guardar</button>
+      <button type="button" class="ghost" (click)="reset()">Restaurar</button>
+    </div>
+
+    <div class="ok" *ngIf="savedMsg">{{ savedMsg }}</div>
+  </div>
+</div>
