@@ -1,0 +1,27 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">MV</div>
+      <div class="title">MiVivienda</div>
+    </div>
+
+    <nav class="nav">
+      <a routerLink="/home/user" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/home/clientes" routerLinkActive="active">HomeClientes</a>
+      <a routerLink="/home/unidades" routerLinkActive="active">HomeUnidades</a>
+      <a routerLink="/home/simulacion" routerLinkActive="active">Simulación</a>
+      <a routerLink="/home/operaciones" routerLinkActive="active">HomeOperaciones</a>
+
+      <div class="sep"></div>
+
+      <a *ngIf="isAdmin()" routerLink="/home/admin" routerLinkActive="active">HomeAdmin</a>
+      <a *ngIf="isAdmin()" routerLink="/home/config" routerLinkActive="active">Configuración</a>
+    </nav>
+
+    <button class="logout" (click)="logout()">Cerrar sesión</button>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

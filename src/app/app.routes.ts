@@ -16,8 +16,24 @@ export const routes: Routes = [
     path: 'home',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./component/home/home').then(m => m.Home),
+      import('./component/home/layout/home-layout').then(m => m.HomeLayout),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'user' },
+
+      { path: 'user', loadComponent: () => import('./component/home/user/home-user').then(m => m.HomeUser) },
+      { path: 'admin', loadComponent: () => import('./component/home/admin/home-admin').then(m => m.HomeAdmin) },
+
+      { path: 'config', loadComponent: () => import('./component/home/config/home-config').then(m => m.HomeConfig) },
+      { path: 'clientes', loadComponent: () => import('./component/home/clientes/home-clientes').then(m => m.HomeClientes) },
+      { path: 'unidades', loadComponent: () => import('./component/home/unidades/home-unidades').then(m => m.HomeUnidades) },
+      { path: 'simulacion', loadComponent: () => import('./component/home/simulacion/home-simulacion').then(m => m.HomeSimulacion) },
+      { path: 'operaciones', loadComponent: () => import('./component/home/operaciones/home-operaciones').then(m => m.HomeOperaciones) },
+    ],
   },
-  { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: '**', redirectTo: 'home' },
+
+  // ✅ esto evita pantalla en blanco al entrar a /
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
+
+  // ✅ cualquier cosa rara manda a login
+  { path: '**', redirectTo: 'login' },
 ];
