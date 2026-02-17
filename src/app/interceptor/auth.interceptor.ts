@@ -3,10 +3,8 @@ import { inject } from '@angular/core';
 import { TokenService } from '../services/token.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // 1) Nunca interceptar preflight
   if (req.method === 'OPTIONS') return next(req);
 
-  // 2) No agregar token en endpoints públicos de auth
   const isAuthEndpoint =
     req.url.includes('/api/auth/register') ||
     req.url.includes('/api/authenticate') ||

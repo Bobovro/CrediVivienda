@@ -10,7 +10,6 @@ import { Chart, registerables, ChartConfiguration, ChartType } from 'chart.js';
 
 import { AuditLog, AuditPage } from '../../../model/audit.model';
 
-// ✅ MUY IMPORTANTE (evita: "bar/line/doughnut is not a registered controller")
 Chart.register(...registerables);
 
 @Component({
@@ -27,7 +26,6 @@ export class HomeAdmin implements OnInit, OnDestroy {
   errorMsg = '';
   chartsReady = false;
 
-  // Debug rápido
   debug = {
     clientes: 'INIT',
     unidades: 'INIT',
@@ -35,16 +33,13 @@ export class HomeAdmin implements OnInit, OnDestroy {
     audit: 'INIT',
   };
 
-  // KPIs
   totalClientes = 0;
   totalUnidades = 0;
   totalPrestamos = 0;
   totalAuditoria = 0;
 
-  // Logs recientes
   ultimosLogs: AuditLog[] = [];
 
-  // ===== Charts =====
   entidadChartType: ChartType = 'bar';
   entidadChartData: ChartConfiguration['data'] = {
     labels: ['CLIENTE', 'UNIDAD', 'PRESTAMO', 'OTROS'],
@@ -66,7 +61,6 @@ export class HomeAdmin implements OnInit, OnDestroy {
     plugins: { legend: { position: 'bottom' } },
   };
 
-  // ✅ Ajusta si usas environment.apiUrl
   private readonly BASE = 'http://localhost:8080';
   private readonly API_CLIENTES = `${this.BASE}/api/clientes`;
   private readonly API_UNIDADES = `${this.BASE}/api/unidades`;
@@ -85,7 +79,6 @@ export class HomeAdmin implements OnInit, OnDestroy {
   }
 
   load(): void {
-    // reset visual
     this.loading = true;
     this.errorMsg = '';
     this.chartsReady = false;
@@ -147,14 +140,12 @@ export class HomeAdmin implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          // ✅ pase lo que pase, nunca queda infinito
           this.loading = false;
           this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (res) => {
-          // si llegaron OK
           if (this.debug.clientes === 'REQ') this.debug.clientes = 'OK';
           if (this.debug.unidades === 'REQ') this.debug.unidades = 'OK';
           if (this.debug.prestamos === 'REQ') this.debug.prestamos = 'OK';
@@ -169,13 +160,10 @@ export class HomeAdmin implements OnInit, OnDestroy {
           this.ultimosLogs = logs.slice(0, 10);
 
           this.buildCharts(logs);
-
-          // ✅ render charts al final
           this.chartsReady = true;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          // debería casi nunca entrar acá por catchError, pero por si acaso:
           this.errorMsg =
             err?.message ?? 'No se pudo cargar el dashboard admin (error inesperado).';
         },
@@ -183,7 +171,6 @@ export class HomeAdmin implements OnInit, OnDestroy {
   }
 
   private buildCharts(logs: AuditLog[]) {
-    // acciones
     const acc = { CREATE: 0, UPDATE: 0, DELETE: 0, LOGIN: 0, OTROS: 0 };
 
     for (const l of logs) {
@@ -200,7 +187,6 @@ export class HomeAdmin implements OnInit, OnDestroy {
       datasets: [{ data: [acc.CREATE, acc.UPDATE, acc.DELETE, acc.LOGIN, acc.OTROS], label: 'Acciones' }],
     };
 
-    // entidades
     const ent = { CLIENTE: 0, UNIDAD: 0, PRESTAMO: 0, OTROS: 0 };
 
     for (const l of logs) {

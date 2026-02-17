@@ -16,13 +16,11 @@
     </div>
   </div>
 
-  <!-- mensajes -->
   <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
   <div class="alert ok" *ngIf="okMsg">{{ okMsg }}</div>
 
   <div class="grid">
 
-    <!-- FORM -->
     <section class="card">
       <h2>{{ editingId ? 'Editar cliente' : 'Crear cliente' }}</h2>
 
@@ -91,11 +89,9 @@
       </form>
     </section>
 
-    <!-- LISTA -->
     <section class="card">
       <h2>Lista</h2>
 
-      <!-- ✅ buscador -->
       <div class="list-tools">
         <input
           class="search"

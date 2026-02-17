@@ -1,12 +1,10 @@
-/* ===== Contenedor general: SOLO el contenido scrollea ===== */
 .layout{
   display:flex;
-  height:100vh;           /* clave */
-  overflow:hidden;        /* clave: evita scroll del layout */
+  height:100vh;
+  overflow:hidden;
   background:#f5f6fa;
 }
 
-/* ===== Sidebar (desktop) ===== */
 .sidebar{
   width:210px;
   padding:16px;
@@ -16,12 +14,11 @@
   flex-direction:column;
   gap:14px;
 
-  height:100vh;           /* clave */
-  overflow:hidden;        /* clave: NO scroll dentro de sidebar */
+  height:100vh;
+  overflow:hidden;
   flex: 0 0 auto;
 }
 
-/* brand */
 .brand{
   display:flex;
   align-items:center;
@@ -41,10 +38,9 @@
 }
 .title{ font-weight:900; }
 
-/* ===== NAV: ocupa el espacio, pero SIN overflow ===== */
 .nav-wrap{
   flex: 1 1 auto;
-  overflow:hidden;        /* clave */
+  overflow:hidden;
   padding-right: 0;
 }
 
@@ -55,7 +51,6 @@
   padding:0 0 35px 0;
 }
 
-/* links más compactos (para que entren en pantalla) */
 .nav a{
   color:#e5e7eb;
   text-decoration:none;
@@ -74,7 +69,6 @@
   margin: 8px 0;
 }
 
-/* ===== Logout: SIEMPRE visible abajo ===== */
 .logout{
   width:100%;
   border:none;
@@ -84,20 +78,18 @@
   background:#1d4ed8;
   color:#fff;
   font-weight:900;
-  margin-top: auto;        /* clave: empuja al fondo */
+  margin-top: auto;
   flex: 0 0 auto;
 }
 
-/* ===== Content: aquí sí hay scroll ===== */
 .content{
   flex:1;
   min-width:0;
-  height:100vh;           /* clave */
-  overflow:auto;          /* clave: scroll solo aquí */
+  height:100vh;
+  overflow:auto;
   padding:18px;
 }
 
-/* ===== TOPBAR (solo mobile) ===== */
 .topbar{
   position:sticky;
   top:0;
@@ -153,7 +145,6 @@
   cursor:pointer;
 }
 
-/* ===== MOBILE ===== */
 .layout.mobile{
   flex-direction:column;
   height:100vh;
@@ -162,11 +153,10 @@
 
 .layout.mobile .content{
   padding:14px;
-  height: calc(100vh - 56px);  /* topbar */
+  height: calc(100vh - 56px);
   overflow:auto;
 }
 
-/* drawer */
 .layout.mobile .sidebar{
   position:fixed;
   top:0;
@@ -183,7 +173,6 @@
   transform: translateX(0);
 }
 
-/* overlay */
 .overlay{
   position:fixed;
   inset:0;
@@ -191,7 +180,6 @@
   z-index:55;
 }
 
-/* ===== Extra: pantallas bajitas (evita que “se corte”) ===== */
 @media (max-height: 740px){
   .sidebar{ padding:12px; gap:10px; }
   .nav a{ padding:8px 10px; font-size:13px; }

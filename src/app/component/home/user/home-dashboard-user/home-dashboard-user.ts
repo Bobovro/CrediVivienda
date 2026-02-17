@@ -10,7 +10,6 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription, of } from 'rxjs';
 import { catchError, finalize, timeout } from 'rxjs/operators';
 
-// ✅ NECESARIO EN CHART.JS v3+
 Chart.register(...registerables);
 
 @Component({
@@ -21,8 +20,8 @@ Chart.register(...registerables);
   styleUrls: ['./home-dashboard-user.css'],
 })
 export class HomeDashboardUser implements OnInit, OnDestroy {
-  loading = false;          // para spinners/secciones
-  loadingBtn = false;       // para botón (extra seguro)
+  loading = false;
+  loadingBtn = false;
   errorMsg = '';
 
   debug = {
@@ -55,13 +54,11 @@ export class HomeDashboardUser implements OnInit, OnDestroy {
 
   private sub?: Subscription;
 
-  // ✅ mejor con proxy luego: '/api/prestamos'
   private readonly API = 'http://localhost:8080/api/prestamos';
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    // pequeño delay para evitar que Chart inicialice antes de pintar el canvas
     setTimeout(() => this.load(), 0);
   }
 

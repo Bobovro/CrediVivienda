@@ -22,8 +22,8 @@ import { Cliente } from '../../../model/cliente.model';
 })
 export class HomeClientes implements OnInit {
   clientes: Cliente[] = [];
-  loading = false; // listar/refresh
-  saving = false;  // create/update
+  loading = false;
+  saving = false;
   errorMsg = '';
   okMsg = '';
 
@@ -31,7 +31,6 @@ export class HomeClientes implements OnInit {
 
   form!: FormGroup;
 
-  // ✅ buscador
   query = '';
 
   constructor(
@@ -54,7 +53,6 @@ export class HomeClientes implements OnInit {
     this.loadClientes();
   }
 
-  // ✅ Filtrado en vivo
   get filteredClientes(): Cliente[] {
     const q = (this.query || '').trim().toLowerCase();
     if (!q) return this.clientes;
@@ -80,7 +78,6 @@ export class HomeClientes implements OnInit {
     this.query = '';
   }
 
-  // ✅ reset SOLO del form
   private resetFormOnly() {
     this.editingId = null;
     this.form.reset({
@@ -103,7 +100,6 @@ export class HomeClientes implements OnInit {
     this.clienteService.list()
       .pipe(finalize(() => {
         this.loading = false;
-        // ✅ fuerza refresco UI (evita que se “actualice recién” con otro click)
         this.cdr.detectChanges();
       }))
       .subscribe({
@@ -166,7 +162,6 @@ export class HomeClientes implements OnInit {
         }))
         .subscribe({
           next: (created: Cliente) => {
-            // ✅ se agrega al instante
             this.clientes = [created, ...this.clientes];
 
             this.okMsg = 'Cliente creado correctamente';
@@ -181,7 +176,6 @@ export class HomeClientes implements OnInit {
       return;
     }
 
-    // UPDATE
     this.clienteService.update(this.editingId, payload)
       .pipe(finalize(() => {
         this.saving = false;

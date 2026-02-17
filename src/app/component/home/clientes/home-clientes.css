@@ -1,4 +1,3 @@
-/* home-clientes.css */
 .page {
   padding: 22px;
 }
@@ -30,7 +29,7 @@ h1 {
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr; /* <-- SIEMPRE 1 columna */
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
@@ -48,7 +47,7 @@ h1 {
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(8px);
 
-  overflow: hidden;     /* <-- CLAVE: nada se sale del borde redondeado */
+  overflow: hidden;
   box-sizing: border-box;
 }
 
@@ -77,10 +76,9 @@ h1 {
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 45px;        /* aumenta separación */
+  gap: 45px;
   margin-bottom: 8px;
 }
-
 
 @media (max-width: 600px) {
   .row {

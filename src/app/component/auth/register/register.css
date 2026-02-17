@@ -13,18 +13,16 @@
     linear-gradient(180deg, rgba(0, 0, 0, 0.38) 0%, rgba(0, 0, 0, 0.45) 100%),
     url('/registerfoto.png');
 
-  background-size: 110%;              /* CLAVE */
+  background-size: 110%;
   background-position: center;
   background-repeat: no-repeat;
 
   animation: bgFloat 18s ease-in-out infinite alternate;
 }
 
-
-/* ===== Card ===== */
 .card{
   position: relative;
-  width: min(460px, calc(100vw - 32px));  /* un poco más ancha que login */
+  width: min(460px, calc(100vw - 32px));
   padding: 32px;
   margin: 0;
 
@@ -34,9 +32,6 @@
   box-shadow: 0 14px 40px rgba(15,23,42,.20);
 
   overflow: hidden;
-
-  /* Animación entrada */
-
   animation: fadeSlideIn 0.55s cubic-bezier(.2,.8,.2,1) both;
 }
 
@@ -45,7 +40,6 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Barra azul lateral */
 .card::before{
   content:"";
   position:absolute;
@@ -55,8 +49,6 @@
   width:6px;
   border-radius:14px 0 0 14px;
   background: linear-gradient(180deg, #1d4ed8, #60a5fa);
-
-  /* brillo sutil */
   animation: barGlow 2.2s ease-in-out infinite;
 }
 
@@ -65,7 +57,6 @@
   50%     { filter: brightness(1.22); }
 }
 
-/* ===== Título ===== */
 h2{
   margin:0 0 14px;
   text-align:center;
@@ -74,7 +65,6 @@ h2{
   letter-spacing:-.2px;
 }
 
-/* ===== Labels ===== */
 label{
   display:block;
   margin-top:12px;
@@ -83,7 +73,6 @@ label{
   color:#334155;
 }
 
-/* ===== Inputs ===== */
 input{
   width:100%;
   margin-top:8px;
@@ -106,7 +95,6 @@ input:focus{
   transform: translateY(-1px);
 }
 
-/* Validaciones */
 small{
   display:block;
   margin-top:6px;
@@ -114,7 +102,6 @@ small{
   color:#b91c1c;
 }
 
-/* ===== Mensajes ===== */
 .ok{
   margin-top:12px;
   padding:10px 12px;
@@ -136,7 +123,6 @@ small{
   font-size:13px;
   text-align:center;
 
-  /* shake suave si aparece */
   animation: shake .25s ease-in-out 1;
 }
 
@@ -146,7 +132,6 @@ small{
   75% { transform: translateX(4px); }
 }
 
-/* ===== Botón ===== */
 button{
   width:100%;
   margin-top:18px;
@@ -179,7 +164,6 @@ button:disabled{
   transform:none;
 }
 
-/* ===== Link ===== */
 .link{
   margin-top:14px;
   text-align:center;
@@ -193,13 +177,11 @@ button:disabled{
 }
 .link a:hover{ text-decoration:underline; }
 
-/* ===== Responsive extra ===== */
 @media (max-width: 420px){
   .card{ padding: 22px; }
   h2{ font-size: 20px; }
 }
 
-/* ===== Accesibilidad ===== */
 @media (prefers-reduced-motion: reduce){
   .card, .card::before, .error { animation: none !important; }
   input, button { transition: none !important; }

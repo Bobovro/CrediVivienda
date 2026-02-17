@@ -7,7 +7,6 @@
   padding: 16px;
   box-sizing: border-box;
 
-  /* clave para que nada se recorte */
   overflow: visible;
 
   background-image:
@@ -29,10 +28,8 @@
   border: 1px solid rgba(15,23,42,.10);
   box-shadow: 0 14px 40px rgba(15,23,42,.20);
 
-  /* evita que el pseudo-elemento empuje/recorte */
   overflow: hidden;
 }
-
 
 .card::before{
   content:"";
@@ -126,7 +123,6 @@ button:disabled{ opacity:.65; cursor:not-allowed; }
 }
 .link a:hover{ text-decoration:underline; }
 
-/* ===== Animación de entrada card ===== */
 .card{
   animation: cardIn .55s cubic-bezier(.2,.8,.2,1) both;
 }
@@ -136,7 +132,6 @@ button:disabled{ opacity:.65; cursor:not-allowed; }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ===== Fondo con movimiento suave ===== */
 :host{
   animation: bgMove 10s ease-in-out infinite alternate;
 }
@@ -146,7 +141,6 @@ button:disabled{ opacity:.65; cursor:not-allowed; }
   to   { background-position: 50% 55%; }
 }
 
-/* ===== Borde azul: brillo sutil ===== */
 .card::before{
   animation: barGlow 2.2s ease-in-out infinite;
 }
@@ -156,7 +150,6 @@ button:disabled{ opacity:.65; cursor:not-allowed; }
   50%     { filter: brightness(1.25); }
 }
 
-/* ===== Inputs: micro-animación al focus ===== */
 input{
   transition: border-color .15s ease, box-shadow .15s ease, transform .08s ease;
 }
@@ -164,7 +157,6 @@ input:focus{
   transform: translateY(-1px);
 }
 
-/* ===== Botón: hover más pro ===== */
 button{
   background: linear-gradient(90deg, #1d4ed8, #60a5fa);
   transition: transform .12s ease, filter .15s ease, opacity .15s ease;
@@ -177,7 +169,6 @@ button:active{
   transform: translateY(1px);
 }
 
-/* ===== Error: shake suave cuando aparece ===== */
 .error{
   animation: shake .25s ease-in-out 1;
 }
@@ -188,7 +179,6 @@ button:active{
   75% { transform: translateX(4px); }
 }
 
-/* ===== Accesibilidad: si el usuario pide menos movimiento ===== */
 @media (prefers-reduced-motion: reduce){
   :host, .card, .card::before, .error{
     animation: none !important;

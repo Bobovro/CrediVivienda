@@ -22,15 +22,14 @@ import { UnidadInmobiliaria } from '../../../model/unidad-inmobiliaria.model';
 export class HomeUnidades implements OnInit {
   unidades: UnidadInmobiliaria[] = [];
 
-  loading = false; // listar/refresh/delete
-  saving = false;  // create/update
+  loading = false;
+  saving = false;
 
   errorMsg = '';
   okMsg = '';
 
   editingId: number | null = null;
 
-  // buscador
   query = '';
 
   form!: FormGroup;
@@ -49,7 +48,6 @@ export class HomeUnidades implements OnInit {
       bonoTechoPropio: [{ value: 0, disabled: true }, [Validators.min(0)]],
     });
 
-    // Habilitar/deshabilitar bono según checkbox
     this.form.get('aplicaTechoPropio')?.valueChanges.subscribe((checked: boolean) => {
       const bonoCtrl = this.form.get('bonoTechoPropio');
       if (!bonoCtrl) return;
@@ -67,7 +65,6 @@ export class HomeUnidades implements OnInit {
     this.loadUnidades();
   }
 
-  // Forzar UI update (misma idea que HomeClientes)
   private uiTick() {
     // run dentro de Angular zone + fuerza detección
     this.zone.run(() => {
@@ -75,7 +72,6 @@ export class HomeUnidades implements OnInit {
     });
   }
 
-  // Filtrado en vivo
   get filteredUnidades(): UnidadInmobiliaria[] {
     const q = (this.query || '').trim().toLowerCase();
     if (!q) return this.unidades;
@@ -106,7 +102,6 @@ export class HomeUnidades implements OnInit {
       bonoTechoPropio: 0,
     });
 
-    // al reset queda desmarcado => deshabilitar bono
     this.form.get('bonoTechoPropio')?.disable({ emitEvent: false });
 
     this.form.markAsPristine();
@@ -117,17 +112,17 @@ export class HomeUnidades implements OnInit {
     this.loading = true;
     this.errorMsg = '';
 
-    this.uiTick(); // 👈 para que el botón cambie a "Cargando..." al toque
+    this.uiTick();
 
     this.unidadService.list()
       .pipe(finalize(() => {
         this.loading = false;
-        this.uiTick(); // 👈 clave: apaga loading y fuerza repaint
+        this.uiTick();
       }))
       .subscribe({
         next: (data) => {
           this.unidades = data ?? [];
-          this.uiTick(); // 👈 clave: pinta tabla sin necesidad de click
+          this.uiTick();
         },
         error: (err) => {
           this.errorMsg = err?.error?.message ?? err?.error ?? 'No se pudo cargar unidades';
@@ -156,7 +151,6 @@ export class HomeUnidades implements OnInit {
       bonoTechoPropio: u.bonoTechoPropio ?? 0,
     });
 
-    // habilitar/deshabilitar bono según checkbox
     const bonoCtrl = this.form.get('bonoTechoPropio');
     if (u.aplicaTechoPropio) bonoCtrl?.enable({ emitEvent: false });
     else bonoCtrl?.disable({ emitEvent: false });
@@ -184,10 +178,8 @@ export class HomeUnidades implements OnInit {
     this.saving = true;
     this.uiTick();
 
-    // getRawValue() incluye bono aunque esté disabled
     const payload: UnidadInmobiliaria = this.form.getRawValue();
 
-    // CREATE
     if (!this.editingId) {
       this.unidadService.create(payload)
         .pipe(finalize(() => {
@@ -210,7 +202,6 @@ export class HomeUnidades implements OnInit {
       return;
     }
 
-    // UPDATE
     this.unidadService.update(this.editingId, payload)
       .pipe(finalize(() => {
         this.saving = false;
@@ -236,7 +227,7 @@ export class HomeUnidades implements OnInit {
     this.okMsg = '';
     this.errorMsg = '';
 
-    this.loading = true; // muestra skeleton mientras elimina (opcional)
+    this.loading = true;
     this.uiTick();
 
     this.unidadService.delete(id)

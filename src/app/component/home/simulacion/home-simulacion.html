@@ -23,12 +23,10 @@
   <div class="alert ok" *ngIf="okMsg">{{ okMsg }}</div>
 
   <div class="grid">
-    <!-- ========================= FORM ========================= -->
     <section class="card">
       <h2>Datos de la simulación</h2>
 
       <form [formGroup]="form" (ngSubmit)="simulate()" novalidate>
-        <!-- Cliente + Unidad -->
         <div class="row">
           <div class="field">
             <label>Cliente *</label>
@@ -65,7 +63,6 @@
           </div>
         </div>
 
-        <!-- Monto + Plazo -->
         <div class="row">
           <div class="field">
             <label>Monto préstamo *</label>
@@ -88,7 +85,6 @@
           </div>
         </div>
 
-        <!-- Moneda + Tasa -->
         <div class="row">
           <div class="field">
             <label>Moneda (definida en Configuración)</label>
@@ -111,7 +107,6 @@
           </div>
         </div>
 
-        <!-- Tipo tasa + Capitalización -->
         <div class="row">
           <div class="field">
             <label>Tipo de tasa (Configuración)</label>
@@ -131,7 +126,6 @@
           </div>
         </div>
 
-        <!-- Gracia -->
         <div class="row">
           <div class="field">
             <label>Gracia (Configuración)</label>
@@ -149,7 +143,6 @@
           </div>
         </div>
 
-        <!-- ⚠️ VALIDACIÓN VISUAL -->
         <div
           class="alert error"
           *ngIf="
@@ -164,7 +157,6 @@
           ({{ form.get('plazoMeses')?.value }}).
         </div>
 
-        <!-- Botones -->
         <div class="form-actions">
           <button
             class="btn"
@@ -186,7 +178,6 @@
       </form>
     </section>
 
-    <!-- ========================= RESULTADO ========================= -->
     <section class="card">
       <h2>Resultado</h2>
 

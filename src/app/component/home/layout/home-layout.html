@@ -1,5 +1,4 @@
 <div class="layout" [class.mobile]="isMobile">
-  <!-- TOPBAR (aparece en mobile / pantallas chicas) -->
   <header class="topbar" *ngIf="isMobile">
     <button class="icon-btn" type="button" (click)="toggleMenu()">
       ☰
@@ -15,16 +14,13 @@
     </button>
   </header>
 
-  <!-- overlay -->
   <div class="overlay" *ngIf="isMobile && menuOpen" (click)="closeMenu()"></div>
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" [class.open]="!isMobile || menuOpen">
     <div class="brand">
       <div class="logo">CV</div>
       <div class="title">CrediVivienda</div>
 
-      <!-- botón X solo en mobile -->
       <button class="icon-close" type="button" *ngIf="isMobile" (click)="closeMenu()">✕</button>
     </div>
 

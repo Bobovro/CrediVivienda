@@ -53,7 +53,6 @@
   font-weight:700;
 }
 
-/* KPIs */
 .kpis{
   display:grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
@@ -82,7 +81,6 @@
   color:#0f172a;
 }
 
-/* Grid */
 .grid{
   display:grid;
   grid-template-columns: 1.2fr .8fr;
@@ -126,7 +124,6 @@
   height: 320px;
 }
 
-/* Tabla */
 .table-wrap{
   overflow:auto;
   border-radius:12px;
@@ -168,7 +165,6 @@
   text-overflow:ellipsis;
 }
 
-/* Badges */
 .badge{
   display:inline-block;
   padding:4px 8px;
@@ -207,7 +203,6 @@
   font-weight:800;
 }
 
-/* Responsive */
 @media (max-width: 1100px){
   .kpis{ grid-template-columns: repeat(2, minmax(0,1fr)); }
   .grid{ grid-template-columns: 1fr; }

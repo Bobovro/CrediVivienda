@@ -34,12 +34,10 @@ export class HomeSimulacion implements OnInit {
   clientes: Cliente[] = [];
   unidades: UnidadInmobiliaria[] = [];
 
-  // ✅ guardamos config para mostrarlo en UI (solo lectura)
   config: AppConfig | null = null;
 
   result: Prestamo | null = null;
 
-  // catálogos (solo para labels)
   monedas = [
     { value: 'PEN', label: 'Soles (PEN)' },
     { value: 'USD', label: 'Dólares (USD)' },
@@ -71,26 +69,21 @@ export class HomeSimulacion implements OnInit {
       montoPrestamo: [0, [Validators.required, Validators.min(1)]],
       plazoMeses: [12, [Validators.required, Validators.min(1), Validators.max(600)]],
 
-      // ✅ vienen de config (y se bloquean)
       moneda: ['PEN', [Validators.required]],
       tipoTasa: ['EFECTIVA', [Validators.required]],
       capitalizacion: [null],
 
       tasaInteres: [0.12, [Validators.required, Validators.min(0)]],
 
-      // ✅ vienen de config (y se bloquean)
-      // Ojo: el enunciado menciona gracia, y ustedes lo limitaron a 0–60
       graciaTotal: [0, [Validators.min(0), Validators.max(60)]],
       graciaParcial: [0, [Validators.min(0), Validators.max(60)]],
     });
 
-    // UX: al tocar form limpiamos mensajes
     this.form.valueChanges.subscribe(() => {
       this.errorMsg = '';
       this.okMsg = '';
     });
 
-    // ✅ CLAVE: si cambia el plazo, reajustar gracia (para evitar 60 vs 12)
     this.form.get('plazoMeses')?.valueChanges.subscribe(() => {
       const plazo = Number(this.form.get('plazoMeses')?.value ?? 0);
       const maxG = Math.min(60, Math.max(0, plazo));
@@ -104,7 +97,7 @@ export class HomeSimulacion implements OnInit {
       gP?.updateValueAndValidity({ emitEvent: false });
 
       if (this.config) {
-        this.applyConfig(this.config); // ya clampa gracia y mantiene readonly
+        this.applyConfig(this.config);
         this.cdr.detectChanges();
       }
     });
@@ -114,7 +107,6 @@ export class HomeSimulacion implements OnInit {
     this.bootstrap();
   }
 
-  // ✅ Helpers para mostrar labels
   monedaLabel(value: any): string {
     return this.monedas.find(x => x.value === value)?.label ?? String(value ?? '-');
   }
@@ -132,7 +124,6 @@ export class HomeSimulacion implements OnInit {
     return `Parcial (${this.config.graciaPeriodos ?? 0})`;
   }
 
-  // ✅ Bloquea campos que vienen de config (solo lectura)
   private lockConfigFields() {
     this.form.get('moneda')?.disable({ emitEvent: false });
     this.form.get('tipoTasa')?.disable({ emitEvent: false });
@@ -141,19 +132,16 @@ export class HomeSimulacion implements OnInit {
     this.form.get('graciaParcial')?.disable({ emitEvent: false });
   }
 
-  // ✅ clamp helper
   private clamp(n: number, min: number, max: number) {
     const x = Number.isFinite(n) ? n : 0;
     return Math.max(min, Math.min(max, x));
   }
 
-  // ✅ Aplica config al form (pero corrige gracia para que NO supere el plazo)
   private applyConfig(cfg: AppConfig) {
     this.config = cfg;
 
     const plazo = Number(this.form.get('plazoMeses')?.value ?? 0);
 
-    // regla: gracia <= plazo y <= 60 (según tu UI)
     const periodosCfg = Number(cfg.graciaPeriodos ?? 0);
     const periodos = this.clamp(periodosCfg, 0, Math.min(60, Math.max(0, plazo)));
 
@@ -168,7 +156,6 @@ export class HomeSimulacion implements OnInit {
       graciaParcial,
     }, { emitEvent: false });
 
-    // siempre solo lectura
     this.lockConfigFields();
   }
 
@@ -208,7 +195,6 @@ export class HomeSimulacion implements OnInit {
       return;
     }
 
-    // ✅ Validación extra (por si acaso)
     const rawCheck = this.form.getRawValue();
     const plazo = Number(rawCheck.plazoMeses ?? 0);
     const gT = Number(rawCheck.graciaTotal ?? 0);
@@ -226,7 +212,7 @@ export class HomeSimulacion implements OnInit {
     this.simulating = true;
     this.cdr.detectChanges();
 
-    const raw = this.form.getRawValue(); // incluye disabled
+    const raw = this.form.getRawValue();
 
     const payload: Prestamo = {
       clienteId: Number(raw.clienteId),

@@ -8,7 +8,6 @@ import { AuditPage } from '../model/audit.model';
   providedIn: 'root',
 })
 export class AuditService {
-  // Si ya tienes environment.ts, mejor usa: environment.apiUrl + '/api/admin/audit'
   private readonly API = 'http://localhost:8080/api/admin/audit';
 
   constructor(private http: HttpClient) {}
@@ -16,7 +15,7 @@ export class AuditService {
   listar(params?: {
     page?: number;
     size?: number;
-    sort?: string; // ejemplo: 'fecha'
+    sort?: string;
     dir?: 'asc' | 'desc';
     entidad?: string;
     accion?: string;

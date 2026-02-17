@@ -30,12 +30,7 @@ export const routes: Routes = [
       { path: 'simulacion', loadComponent: () => import('./component/home/simulacion/home-simulacion').then(m => m.HomeSimulacion) },
       { path: 'operaciones', loadComponent: () => import('./component/home/operaciones/home-operaciones').then(m => m.HomeOperaciones) },
       { path: 'clientes', canActivate: [authGuard], loadComponent: () => import('./component/home/clientes/home-clientes').then(m => m.HomeClientes) },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./component/home/user/home-dashboard-user/home-dashboard-user')
-            .then(m => m.HomeDashboardUser),
-      }
+      { path: 'dashboard', loadComponent: () => import('./component/home/user/home-dashboard-user/home-dashboard-user').then(m => m.HomeDashboardUser),}
       ,
       {
         path: 'admin',
@@ -53,9 +48,7 @@ export const routes: Routes = [
     ],
   },
 
-  // ✅ esto evita pantalla en blanco al entrar a /
   { path: '', pathMatch: 'full', redirectTo: 'login' },
 
-  // ✅ cualquier cosa rara manda a login
   { path: '**', redirectTo: 'login' },
 ];

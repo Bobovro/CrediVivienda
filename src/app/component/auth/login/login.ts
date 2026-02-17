@@ -14,7 +14,7 @@ import { AuthService } from '../../../services/auth.service';
 export class Login {
   loading = false;
   errorMsg = '';
-  form: any; // o FormGroup si quieres tipar
+  form: any;
 
   constructor(
     private fb: FormBuilder,

@@ -10,7 +10,6 @@ export interface Cuota {
   esGraciaParcial?: boolean;
   fechaVencimiento?: string;
   fechaSimulacion?: string;
-// "YYYY-MM-DD"
 }
 
 export interface Prestamo {
@@ -31,7 +30,6 @@ export interface Prestamo {
   graciaTotal?: number;
   graciaParcial?: number;
 
-  // resultados
   van?: number;
   tir?: number;
   cuotaFija?: number;

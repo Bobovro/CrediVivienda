@@ -15,7 +15,6 @@ export class HomeLayout implements OnInit {
   isMobile = false;
   menuOpen = false;
 
-  // ancho donde quieres que se “vuelva móvil”
   private readonly MOBILE_BP = 900;
 
   constructor(
@@ -32,7 +31,6 @@ export class HomeLayout implements OnInit {
   checkScreen() {
     const mobileNow = window.innerWidth <= this.MOBILE_BP;
 
-    // si cambió el modo, resetea drawer
     if (mobileNow !== this.isMobile) {
       this.isMobile = mobileNow;
       this.menuOpen = false;
@@ -50,7 +48,6 @@ export class HomeLayout implements OnInit {
   }
 
   onNavClick() {
-    // al navegar en mobile, cierra el menú
     if (this.isMobile) this.closeMenu();
   }
 

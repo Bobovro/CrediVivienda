@@ -94,7 +94,6 @@ export class Auditoria implements OnInit, OnDestroy {
 
   trackById = (_: number, item: AuditLog) => item.id;
 
-  // ✅ badges como en el dashboard admin
   badgeClass(action: string) {
     const a = (action ?? '').toUpperCase();
     if (a.includes('CREATE') || a.includes('CREAR')) return 'badge ok';

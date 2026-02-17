@@ -4,7 +4,7 @@ export type Capitalizacion = 'DIARIA' | 'MENSUAL' | 'ANUAL';
 export type GraciaTipo = 'NINGUNA' | 'TOTAL' | 'PARCIAL';
 
 export interface AppConfig {
-  id?: number; // backend lo maneja como 1
+  id?: number;
   monedaDefault: Moneda;
   tipoTasaDefault: TipoTasa;
   capitalizacion?: Capitalizacion | null;

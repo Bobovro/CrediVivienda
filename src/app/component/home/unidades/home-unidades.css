@@ -168,17 +168,16 @@ h1 { margin: 0; font-size: 26px; font-weight: 700; }
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.06);
 }
-/* --- LISTA: igual que Clientes (título arriba + buscador debajo) --- */
+
 .list-head {
-  display: block;          /* ya no fila */
+  display: block;
   margin-bottom: 12px;
 }
 
 .list-head h2 {
-  margin: 0 0 10px;        /* separa el título del buscador */
+  margin: 0 0 10px;
 }
 
-/* buscador debajo, en una fila (input + botón) */
 .search {
   display: flex;
   gap: 10px;
@@ -186,10 +185,9 @@ h1 { margin: 0; font-size: 26px; font-weight: 700; }
   flex-wrap: wrap;
 }
 
-/* input ocupa casi todo el ancho */
 .search input {
   flex: 1;
-  min-width: 260px;        /* para que no se rompa feo */
+  min-width: 260px;
   padding: 9px 12px;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.12);
@@ -203,7 +201,6 @@ h1 { margin: 0; font-size: 26px; font-weight: 700; }
   box-shadow: 0 0 0 4px rgba(70, 120, 255, 0.18);
 }
 
-/* en móvil: input 100% y botón abajo o al costado según espacio */
 @media (max-width: 600px) {
   .search {
     width: 100%;

@@ -1,4 +1,3 @@
-// home-config.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -35,7 +34,6 @@ export class HomeConfig implements OnInit {
   form!: FormGroup;
   private lastLoaded!: AppConfig;
 
-  // ✅ Solo admin puede editar
   canEdit = true;
 
   monedas: { value: Moneda; label: string }[] = [
@@ -73,7 +71,6 @@ export class HomeConfig implements OnInit {
       graciaPeriodos: [0, [Validators.required, Validators.min(0), Validators.max(60)]],
     });
 
-    // ✅ Regla UI: capitalización solo si NOMINAL
     this.form.get('tipoTasaDefault')?.valueChanges.subscribe((tipo: TipoTasa) => {
       const capCtrl = this.form.get('capitalizacion');
       if (!capCtrl) return;
@@ -86,13 +83,11 @@ export class HomeConfig implements OnInit {
         capCtrl.disable({ emitEvent: false });
       }
 
-      // si es USER, lo mantenemos readonly sí o sí
       if (!this.canEdit) this.form.disable({ emitEvent: false });
 
       this.cdr.detectChanges();
     });
 
-    // ✅ UX: al tocar el formulario, limpiar mensajes
     this.form.valueChanges.subscribe(() => {
       this.errorMsg = '';
       this.okMsg = '';
@@ -101,21 +96,16 @@ export class HomeConfig implements OnInit {
   }
 
   ngOnInit(): void {
-    // ✅ recalcula permisos aquí (a veces el token se setea después del constructor)
     this.canEdit = this.isAdminFromToken();
     this.applyEditMode();
     this.loadConfig();
   }
 
-  // ✅ Aplica modo edición/lectura sin romper la regla de capitalización
   private applyEditMode() {
     if (!this.canEdit) {
       this.form.disable({ emitEvent: false });
     } else {
-      // habilita todo...
       this.form.enable({ emitEvent: false });
-
-      // ...pero respeta la regla: capitalización solo si NOMINAL
       const tipo = this.form.get('tipoTasaDefault')?.value as TipoTasa;
       const capCtrl = this.form.get('capitalizacion');
       if (tipo !== 'NOMINAL') {
@@ -125,7 +115,6 @@ export class HomeConfig implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ✅ Lee roles del JWT (MUY robusto)
   private isAdminFromToken(): boolean {
     const token =
       localStorage.getItem('token') ||
@@ -137,10 +126,8 @@ export class HomeConfig implements OnInit {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
 
-      // ✅ FIX rápido: si el usuario es "admin", permitir edición
       if ((payload?.sub || '').toString().toLowerCase() === 'admin') return true;
 
-      // (si en algún momento agregas roles al JWT, esto ya quedará listo)
       const roles: string[] =
         payload?.roles ||
         payload?.authorities ||
@@ -152,8 +139,6 @@ export class HomeConfig implements OnInit {
       return false;
     }
   }
-
-
 
   private toErrorMsg(err: any): string {
     const e = err?.error ?? err;
@@ -185,12 +170,10 @@ export class HomeConfig implements OnInit {
             graciaPeriodos: cfg.graciaPeriodos ?? 0,
           }, { emitEvent: false });
 
-          // aplica regla capitalización
           const capCtrl = this.form.get('capitalizacion');
           if (cfg.tipoTasaDefault === 'NOMINAL') capCtrl?.enable({ emitEvent: false });
           else capCtrl?.disable({ emitEvent: false });
 
-          // ✅ vuelve a aplicar permisos (clave)
           this.applyEditMode();
 
           this.cdr.detectChanges();

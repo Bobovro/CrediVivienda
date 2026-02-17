@@ -55,7 +55,6 @@ export class HomeOperaciones implements OnInit, OnDestroy {
   }
 
   private repaint() {
-    // ✅ suficiente para zoneless / OnPush sin hacks de setTimeout
     this.cdr.markForCheck();
   }
 
@@ -70,7 +69,6 @@ export class HomeOperaciones implements OnInit, OnDestroy {
     this.repaint();
 
     this.loadSub = forkJoin({
-      // ✅ take(1) evita que forkJoin se quede esperando “para siempre”
       prestamos: this.prestamoService.list().pipe(take(1), catchError(() => of([] as Prestamo[]))),
       clientes: this.clienteService.list().pipe(take(1), catchError(() => of([] as Cliente[]))),
       unidades: this.unidadService.list().pipe(take(1), catchError(() => of([] as UnidadInmobiliaria[]))),
@@ -105,14 +103,12 @@ export class HomeOperaciones implements OnInit, OnDestroy {
           this.repaint();
         },
         error: (err) => {
-          // casi nunca entra (hay catchError), pero por seguridad:
           this.errorMsg = err?.error?.message ?? err?.error ?? 'No se pudo cargar operaciones';
           this.repaint();
         },
       });
   }
 
-  // ---------- Helpers ----------
   clienteLabel(clienteId: number): string {
     const c = this.clienteMap.get(Number(clienteId));
     if (!c) return `Cliente #${clienteId}`;
@@ -153,7 +149,6 @@ export class HomeOperaciones implements OnInit, OnDestroy {
     return 'Ninguna';
   }
 
-  // ---------- Detalle ----------
   openDetail(p: Prestamo) {
     this.errorMsg = '';
     this.okMsg = '';
@@ -199,7 +194,6 @@ export class HomeOperaciones implements OnInit, OnDestroy {
     this.repaint();
   }
 
-  // ---------- Eliminar ----------
   deletePrestamo(p: Prestamo) {
     const id = Number(p.id ?? 0);
     if (!id) return;
