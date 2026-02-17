@@ -37,7 +37,7 @@ export class Login {
 
     this.loading = true;
     this.auth.login(this.form.getRawValue() as any).subscribe({
-      next: () => this.router.navigateByUrl('/home'),
+      next: () => this.router.navigateByUrl('/home/dashboard'),
       error: (err) => {
         this.errorMsg =
           err?.error?.message ?? err?.error ?? 'Credenciales inválidas';

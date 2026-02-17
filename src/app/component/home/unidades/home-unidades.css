@@ -1,0 +1,218 @@
+.page { padding: 22px; }
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+h1 { margin: 0; font-size: 26px; font-weight: 700; }
+
+.subtitle { margin: 15px 1px 0; opacity: 0.8; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.card h2 { margin: 0 0 12px; font-size: 18px; }
+
+.alert {
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin: 10px 0;
+  border: 1px solid transparent;
+}
+
+.alert.error { background: rgba(255, 0, 0, 0.08); border-color: rgba(255, 0, 0, 0.25); }
+.alert.ok { background: rgba(0, 180, 60, 0.10); border-color: rgba(0, 180, 60, 0.25); }
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 12px;
+}
+@media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+
+.field label { display: block; font-size: 13px; margin-bottom: 6px; opacity: 0.85; }
+
+.field label.inline {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  user-select: none;
+}
+
+.field input[type="checkbox"] { width: 16px; height: 16px; }
+
+.field input {
+  width: 95%;
+  padding: 10px 0 10px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  outline: none;
+  background: #fff;
+}
+
+.field input:focus {
+  border-color: rgba(70, 120, 255, 0.65);
+  box-shadow: 0 0 0 4px rgba(70, 120, 255, 0.18);
+}
+
+.hint { display: block; margin-top: 6px; font-size: 12px; opacity: 0.75; }
+
+.err { display: block; margin-top: 6px; color: #b00020; font-size: 12px; }
+
+.form-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+
+.btn {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #2f6bff;
+  color: #fff;
+  font-weight: 600;
+  transition: transform 0.05s ease, opacity 0.2s ease;
+}
+.btn:hover { opacity: 0.92; }
+.btn:active { transform: translateY(1px); }
+.btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+.btn.secondary {
+  background: #eef2ff;
+  color: #1f2a44;
+  border: 1px solid rgba(47, 107, 255, 0.18);
+}
+.btn.danger { background: #ff3b30; }
+.btn.tiny { padding: 7px 10px; border-radius: 9px; font-size: 12px; }
+
+.list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.search {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search input {
+  min-width: 260px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  outline: none;
+  background: #fff;
+}
+.search input:focus {
+  border-color: rgba(70, 120, 255, 0.65);
+  box-shadow: 0 0 0 4px rgba(70, 120, 255, 0.18);
+}
+
+.table-wrap {
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+  background: #fff;
+}
+
+.table th, .table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 13px;
+}
+
+.table th { background: rgba(0, 0, 0, 0.03); font-weight: 700; }
+
+.row-actions { display: flex; gap: 8px; align-items: center; }
+
+.empty { padding: 16px; text-align: center; opacity: 0.85; }
+
+.skeleton { padding: 14px; }
+.skeleton .line {
+  height: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.06);
+}
+/* --- LISTA: igual que Clientes (título arriba + buscador debajo) --- */
+.list-head {
+  display: block;          /* ya no fila */
+  margin-bottom: 12px;
+}
+
+.list-head h2 {
+  margin: 0 0 10px;        /* separa el título del buscador */
+}
+
+/* buscador debajo, en una fila (input + botón) */
+.search {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* input ocupa casi todo el ancho */
+.search input {
+  flex: 1;
+  min-width: 260px;        /* para que no se rompa feo */
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search input:focus {
+  border-color: rgba(70, 120, 255, 0.65);
+  box-shadow: 0 0 0 4px rgba(70, 120, 255, 0.18);
+}
+
+/* en móvil: input 100% y botón abajo o al costado según espacio */
+@media (max-width: 600px) {
+  .search {
+    width: 100%;
+  }
+  .search input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+
+

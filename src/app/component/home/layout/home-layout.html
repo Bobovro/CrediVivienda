@@ -1,24 +1,58 @@
-<div class="layout">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="logo">MV</div>
-      <div class="title">MiVivienda</div>
+<div class="layout" [class.mobile]="isMobile">
+  <!-- TOPBAR (aparece en mobile / pantallas chicas) -->
+  <header class="topbar" *ngIf="isMobile">
+    <button class="icon-btn" type="button" (click)="toggleMenu()">
+      ☰
+    </button>
+
+    <div class="topbar-title">
+      <div class="logo-sm">CV</div>
+      <span>CrediVivienda</span>
     </div>
 
-    <nav class="nav">
-      <a routerLink="/home/user" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/home/clientes" routerLinkActive="active">HomeClientes</a>
-      <a routerLink="/home/unidades" routerLinkActive="active">HomeUnidades</a>
-      <a routerLink="/home/simulacion" routerLinkActive="active">Simulación</a>
-      <a routerLink="/home/operaciones" routerLinkActive="active">HomeOperaciones</a>
+    <button class="icon-btn" type="button" (click)="logout()">
+      Salir
+    </button>
+  </header>
 
-      <div class="sep"></div>
+  <!-- overlay -->
+  <div class="overlay" *ngIf="isMobile && menuOpen" (click)="closeMenu()"></div>
 
-      <a *ngIf="isAdmin()" routerLink="/home/admin" routerLinkActive="active">HomeAdmin</a>
-      <a *ngIf="isAdmin()" routerLink="/home/config" routerLinkActive="active">Configuración</a>
-    </nav>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" [class.open]="!isMobile || menuOpen">
+    <div class="brand">
+      <div class="logo">CV</div>
+      <div class="title">CrediVivienda</div>
 
-    <button class="logout" (click)="logout()">Cerrar sesión</button>
+      <!-- botón X solo en mobile -->
+      <button class="icon-close" type="button" *ngIf="isMobile" (click)="closeMenu()">✕</button>
+    </div>
+
+    <div class="nav-wrap">
+      <nav class="nav">
+        <a routerLink="/home/dashboard" routerLinkActive="active" (click)="onNavClick()">Dashboard</a>
+        <a routerLink="/home/clientes" routerLinkActive="active" (click)="onNavClick()">HomeClientes</a>
+        <a routerLink="/home/unidades" routerLinkActive="active" (click)="onNavClick()">HomeUnidades</a>
+        <a routerLink="/home/simulacion" routerLinkActive="active" (click)="onNavClick()">Simulación</a>
+        <a routerLink="/home/operaciones" routerLinkActive="active" (click)="onNavClick()">HomeOperaciones</a>
+        <a routerLink="/home/config" routerLinkActive="active" (click)="onNavClick()">Configuración</a>
+
+        <div class="sep"></div>
+
+        <a *ngIf="isAdmin()" routerLink="/home/admin" routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">
+          HomeAdmin
+        </a>
+
+        <a *ngIf="isAdmin()"
+           routerLink="/home/admin/auditoria"
+           routerLinkActive="active">
+          Auditoría
+        </a>
+      </nav>
+      <button class="logout" *ngIf="!isMobile" (click)="logout()">Cerrar sesión</button>
+    </div>
+
   </aside>
 
   <main class="content">

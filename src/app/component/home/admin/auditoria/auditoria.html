@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="header">
+    <div>
+      <h2>Auditoría del Sistema</h2>
+      <div class="debug">
+        Debug: Status: <b>{{ debug.status }}</b> · Tiempo: <b>{{ debug.ms }}ms</b> · Items:
+        <b>{{ debug.items }}</b>
+      </div>
+    </div>
+
+    <button class="btn" (click)="load()" [disabled]="loading">
+      {{ loading ? 'Cargando...' : 'Recargar' }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert">
+    {{ error }}
+  </div>
+
+  <div class="card">
+    <div *ngIf="loading" class="loading-line">Cargando auditoría...</div>
+
+    <table class="table" *ngIf="!loading">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Usuario</th>
+        <th>Roles</th>
+        <th>Acción</th>
+        <th>Entidad</th>
+        <th>Entidad ID</th>
+        <th>Detalle</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr *ngFor="let l of logs; trackBy: trackById">
+        <td class="mono">{{ l.id }}</td>
+        <td class="mono">{{ l.fecha }}</td>
+        <td>{{ l.username }}</td>
+        <td class="mono">{{ l.roles }}</td>
+
+        <!-- ✅ badge -->
+        <td>
+          <span [class]="badgeClass(l.accion)">{{ l.accion }}</span>
+        </td>
+
+        <td>{{ l.entidad }}</td>
+        <td class="mono">{{ l.entidadId }}</td>
+        <td class="wrap">{{ l.detalle }}</td>
+      </tr>
+
+      <tr *ngIf="!logs.length">
+        <td colspan="8" class="empty">
+          No hay registros de auditoría (o el endpoint está devolviendo vacío/403).
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

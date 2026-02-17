@@ -1,2 +1,125 @@
-<h2>Dashboard (Admin)</h2>
-<p>Panel para administración y control general.</p>
+<div class="admin">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Dashboard</h1>
+      <p class="sub">Panel de administración, monitoreo y auditoría general.</p>
+
+      <p class="debug">
+        Debug:
+        clientes=<b>{{debug.clientes}}</b> |
+        unidades=<b>{{debug.unidades}}</b> |
+        prestamos=<b>{{debug.prestamos}}</b> |
+        audit=<b>{{debug.audit}}</b>
+      </p>
+    </div>
+
+    <button class="btn" (click)="load()" [disabled]="loading">
+      {{ loading ? 'Cargando...' : 'Recargar' }}
+    </button>
+  </div>
+
+  <div *ngIf="errorMsg" class="alert">
+    {{ errorMsg }}
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-label">Clientes</div>
+      <div class="kpi-value">{{ totalClientes }}</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-label">Unidades</div>
+      <div class="kpi-value">{{ totalUnidades }}</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-label">Préstamos</div>
+      <div class="kpi-value">{{ totalPrestamos }}</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-label">Eventos Auditoría</div>
+      <div class="kpi-value">{{ totalAuditoria }}</div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Acciones recientes -->
+    <section class="card span-2">
+      <div class="card-head">
+        <h3>Acciones recientes</h3>
+        <span class="muted">Últimos 10 eventos</span>
+      </div>
+
+      <div *ngIf="loading" class="skeleton">Cargando datos...</div>
+
+      <div *ngIf="!loading && ultimosLogs.length === 0" class="empty">
+        No hay eventos de auditoría aún.
+      </div>
+
+      <div class="table-wrap" *ngIf="!loading && ultimosLogs.length > 0">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Entidad</th>
+            <th>ID</th>
+            <th>Detalle</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let l of ultimosLogs">
+            <td class="mono">{{ l.fecha | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td>{{ l.username }}</td>
+            <td><span [class]="badgeClass(l.accion)">{{ l.accion }}</span></td>
+            <td>{{ l.entidad }}</td>
+            <td class="mono">{{ l.entidadId }}</td>
+            <td class="truncate" [title]="l.detalle">{{ l.detalle }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Charts -->
+    <section class="card" *ngIf="chartsReady">
+      <div class="card-head">
+        <h3>Acciones por tipo</h3>
+        <span class="muted">Distribución</span>
+      </div>
+
+      <div class="chart">
+        <canvas
+          baseChart
+          [type]="accionesChartType"
+          [data]="accionesChartData"
+          [options]="accionesChartOptions">
+        </canvas>
+      </div>
+    </section>
+
+    <section class="card" *ngIf="chartsReady">
+      <div class="card-head">
+        <h3>Eventos por entidad</h3>
+        <span class="muted">Conteo</span>
+      </div>
+
+      <div class="chart">
+        <canvas
+          baseChart
+          [type]="entidadChartType"
+          [data]="entidadChartData"
+          [options]="entidadChartOptions">
+        </canvas>
+      </div>
+    </section>
+
+  </div>
+</div>

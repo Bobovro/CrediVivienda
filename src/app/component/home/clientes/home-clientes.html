@@ -1,1 +1,169 @@
-<p>clientes works!</p>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Clientes</h1>
+      <p class="subtitle">Crea, edita y elimina clientes registrados por el usuario.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" type="button" (click)="startCreate()">
+        Nuevo cliente
+      </button>
+
+      <button class="btn" type="button" (click)="loadClientes()" [disabled]="loading">
+        {{ loading ? 'Cargando...' : 'Refrescar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- mensajes -->
+  <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="alert ok" *ngIf="okMsg">{{ okMsg }}</div>
+
+  <div class="grid">
+
+    <!-- FORM -->
+    <section class="card">
+      <h2>{{ editingId ? 'Editar cliente' : 'Crear cliente' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="row">
+          <div class="field">
+            <label>Nombres *</label>
+            <input type="text" formControlName="nombres" placeholder="Ej: Juan" />
+            <small class="err" *ngIf="form.get('nombres')?.touched && form.get('nombres')?.invalid">
+              Nombres es obligatorio.
+            </small>
+          </div>
+
+          <div class="field">
+            <label>Apellidos *</label>
+            <input type="text" formControlName="apellidos" placeholder="Ej: Pérez" />
+            <small class="err" *ngIf="form.get('apellidos')?.touched && form.get('apellidos')?.invalid">
+              Apellidos es obligatorio.
+            </small>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>DNI *</label>
+            <input type="text" formControlName="dni" placeholder="8 dígitos" maxlength="8" />
+            <small class="err" *ngIf="form.get('dni')?.touched && form.get('dni')?.invalid">
+              DNI debe tener 8 dígitos.
+            </small>
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" formControlName="email" placeholder="correo@ejemplo.com" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="text" formControlName="telefono" placeholder="Ej: 999999999" />
+          </div>
+
+          <div class="field">
+            <label>Ingreso mensual</label>
+            <input type="number" formControlName="ingresoMensual" step="0.01" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Gasto mensual</label>
+            <input type="number" formControlName="gastoMensual" step="0.01" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn" type="submit" [disabled]="saving">
+            {{ saving ? (editingId ? 'Guardando...' : 'Creando...') : (editingId ? 'Guardar cambios' : 'Crear cliente') }}
+          </button>
+
+          <button class="btn danger" type="button" *ngIf="editingId" (click)="cancelEdit()" [disabled]="saving">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- LISTA -->
+    <section class="card">
+      <h2>Lista</h2>
+
+      <!-- ✅ buscador -->
+      <div class="list-tools">
+        <input
+          class="search"
+          type="text"
+          [(ngModel)]="query"
+          placeholder="Buscar por DNI, nombre, apellido, email o teléfono..."
+        />
+        <button class="btn secondary" type="button" (click)="clearSearch()" [disabled]="!query">
+          Limpiar
+        </button>
+      </div>
+
+      <div class="table-wrap" *ngIf="!loading; else loadingTpl">
+        <table class="table" *ngIf="filteredClientes?.length; else emptyTpl">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>DNI</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Ingreso</th>
+            <th>Gasto</th>
+            <th style="width: 180px;">Acciones</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let c of filteredClientes; trackBy: trackById">
+            <td>{{ c.id }}</td>
+            <td>{{ c.nombres }}</td>
+            <td>{{ c.apellidos }}</td>
+            <td>{{ c.dni }}</td>
+            <td>{{ c.email || '-' }}</td>
+            <td>{{ c.telefono || '-' }}</td>
+            <td>{{ c.ingresoMensual ?? 0 }}</td>
+            <td>{{ c.gastoMensual ?? 0 }}</td>
+            <td>
+              <div class="row-actions">
+                <button class="btn tiny secondary" type="button" (click)="startEdit(c)">
+                  Editar
+                </button>
+                <button class="btn tiny danger" type="button" (click)="remove(c.id!)">
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #loadingTpl>
+        <div class="skeleton">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyTpl>
+        <div class="empty">
+          <p>No hay clientes aún.</p>
+          <button class="btn secondary" type="button" (click)="startCreate()">Crear el primero</button>
+        </div>
+      </ng-template>
+
+    </section>
+  </div>
+</div>

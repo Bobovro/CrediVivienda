@@ -11,9 +11,5 @@ export interface AuthResponse {
 export interface RegisterRequest {
   dni: string;
   password: string;
-  nombres: string;
-  apellidos: string;
-  email: string;
-  telefono: string;
 }
 

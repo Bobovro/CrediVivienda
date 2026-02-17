@@ -1,1 +1,161 @@
-<p>unidades works!</p>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Unidades inmobiliarias</h1>
+      <p class="subtitle">
+        Registra unidades (proyecto/ubicación/valor) para usarlas luego en Operaciones (Préstamos).
+      </p>
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" type="button" (click)="startCreate()">
+        Nueva unidad
+      </button>
+      <button class="btn" type="button" (click)="loadUnidades()" [disabled]="loading">
+        {{ loading ? 'Cargando...' : 'Refrescar' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="alert ok" *ngIf="okMsg">{{ okMsg }}</div>
+
+  <div class="grid">
+    <!-- FORM -->
+    <section class="card">
+      <h2>{{ editingId ? 'Editar unidad' : 'Crear unidad' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="row">
+          <div class="field">
+            <label>Proyecto *</label>
+            <input type="text" formControlName="proyecto" placeholder="Ej: Torre A" />
+            <small class="err" *ngIf="form.get('proyecto')?.touched && form.get('proyecto')?.invalid">
+              Proyecto es obligatorio.
+            </small>
+          </div>
+
+          <div class="field">
+            <label>Ubicación *</label>
+            <input type="text" formControlName="ubicacion" placeholder="Ej: San Miguel - Lima" />
+            <small class="err" *ngIf="form.get('ubicacion')?.touched && form.get('ubicacion')?.invalid">
+              Ubicación es obligatoria.
+            </small>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Valor del inmueble *</label>
+            <input type="number" formControlName="valorInmueble" step="0.01" min="0" />
+            <small class="err" *ngIf="form.get('valorInmueble')?.touched && form.get('valorInmueble')?.invalid">
+              Valor inválido.
+            </small>
+          </div>
+
+          <div class="field">
+            <label class="inline">
+              <input type="checkbox" formControlName="aplicaTechoPropio" />
+              Aplica Techo Propio
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Bono Techo Propio</label>
+            <input type="number" formControlName="bonoTechoPropio" step="0.01" min="0" />
+            <small class="hint" *ngIf="!form.get('aplicaTechoPropio')?.value">
+              Activa “Aplica Techo Propio” para editar este campo.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn" type="submit" [disabled]="saving">
+            {{
+              saving
+                ? (editingId ? 'Guardando...' : 'Creando...')
+                : (editingId ? 'Guardar cambios' : 'Crear unidad')
+            }}
+          </button>
+
+          <button class="btn danger" type="button" *ngIf="editingId" (click)="cancelEdit()" [disabled]="saving">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- LISTA -->
+    <section class="card">
+      <div class="list-head">
+        <h2>Lista</h2>
+
+        <div class="search">
+          <input
+            type="text"
+            placeholder="Buscar por proyecto, ubicación o ID..."
+            [(ngModel)]="query"
+            name="q"
+          />
+          <button class="btn tiny secondary" type="button" (click)="clearSearch()" [disabled]="!query">
+            Limpiar
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrap" *ngIf="!loading; else loadingTpl">
+        <table class="table" *ngIf="filteredUnidades.length; else emptyTpl">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Proyecto</th>
+            <th>Ubicación</th>
+            <th>Valor</th>
+            <th>Techo Propio</th>
+            <th>Bono</th>
+            <th style="width: 180px;">Acciones</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let u of filteredUnidades; trackBy: trackById">
+            <td>{{ u.id }}</td>
+            <td>{{ u.proyecto }}</td>
+            <td>{{ u.ubicacion }}</td>
+            <td>{{ u.valorInmueble ?? 0 }}</td>
+            <td>{{ u.aplicaTechoPropio ? 'Sí' : 'No' }}</td>
+            <td>{{ u.bonoTechoPropio ?? 0 }}</td>
+            <td>
+              <div class="row-actions">
+                <button class="btn tiny secondary" type="button" (click)="startEdit(u)">
+                  Editar
+                </button>
+                <button class="btn tiny danger" type="button" (click)="remove(u.id!)">
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #loadingTpl>
+        <div class="skeleton">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyTpl>
+        <div class="empty">
+          <p>No hay unidades aún.</p>
+          <button class="btn secondary" type="button" (click)="startCreate()">Crear la primera</button>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+</div>

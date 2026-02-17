@@ -1,1 +1,254 @@
-<p>simulacion works!</p>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Simulación</h1>
+      <p class="subtitle">
+        Calcula el cronograma francés, VAN, TIR, TCEA y cuota.
+      </p>
+    </div>
+
+    <div class="actions">
+      <button
+        class="btn secondary"
+        type="button"
+        (click)="bootstrap()"
+        [disabled]="loading || simulating || saving"
+      >
+        {{ loading ? 'Cargando...' : 'Recargar data' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="alert ok" *ngIf="okMsg">{{ okMsg }}</div>
+
+  <div class="grid">
+    <!-- ========================= FORM ========================= -->
+    <section class="card">
+      <h2>Datos de la simulación</h2>
+
+      <form [formGroup]="form" (ngSubmit)="simulate()" novalidate>
+        <!-- Cliente + Unidad -->
+        <div class="row">
+          <div class="field">
+            <label>Cliente *</label>
+            <select formControlName="clienteId">
+              <option [ngValue]="null">-- Selecciona --</option>
+              <option *ngFor="let c of clientes" [value]="c.id">
+                {{ c.id }} - {{ c.nombres }} {{ c.apellidos }}
+                (DNI: {{ c.dni }})
+              </option>
+            </select>
+            <small
+              class="err"
+              *ngIf="form.get('clienteId')?.touched && form.get('clienteId')?.invalid"
+            >
+              Selecciona un cliente.
+            </small>
+          </div>
+
+          <div class="field">
+            <label>Unidad inmobiliaria *</label>
+            <select formControlName="unidadInmobiliariaId">
+              <option [ngValue]="null">-- Selecciona --</option>
+              <option *ngFor="let u of unidades" [value]="u.id">
+                {{ u.id }} - {{ u.proyecto }}
+                ({{ u.ubicacion }}) - {{ u.valorInmueble }}
+              </option>
+            </select>
+            <small
+              class="err"
+              *ngIf="form.get('unidadInmobiliariaId')?.touched && form.get('unidadInmobiliariaId')?.invalid"
+            >
+              Selecciona una unidad.
+            </small>
+          </div>
+        </div>
+
+        <!-- Monto + Plazo -->
+        <div class="row">
+          <div class="field">
+            <label>Monto préstamo *</label>
+            <input
+              type="number"
+              formControlName="montoPrestamo"
+              min="1"
+              step="0.01"
+            />
+          </div>
+
+          <div class="field">
+            <label>Plazo (meses) *</label>
+            <input
+              type="number"
+              formControlName="plazoMeses"
+              min="1"
+              max="600"
+            />
+          </div>
+        </div>
+
+        <!-- Moneda + Tasa -->
+        <div class="row">
+          <div class="field">
+            <label>Moneda (definida en Configuración)</label>
+            <div class="readonly">
+              {{ monedaLabel(form.getRawValue().moneda) }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label>
+              Tasa de interés anual
+              <small>(ej: 12 = 12% ó 0.12 = 12%)</small> *
+            </label>
+            <input
+              type="number"
+              formControlName="tasaInteres"
+              min="0"
+              step="0.0001"
+            />
+          </div>
+        </div>
+
+        <!-- Tipo tasa + Capitalización -->
+        <div class="row">
+          <div class="field">
+            <label>Tipo de tasa (Configuración)</label>
+            <div class="readonly">
+              {{ tipoTasaLabel(form.getRawValue().tipoTasa) }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Capitalización (Configuración)</label>
+            <div class="readonly">
+              {{ capLabel(form.getRawValue().capitalizacion) }}
+            </div>
+            <small class="hint">
+              Solo aplica cuando la tasa es nominal.
+            </small>
+          </div>
+        </div>
+
+        <!-- Gracia -->
+        <div class="row">
+          <div class="field">
+            <label>Gracia (Configuración)</label>
+            <div class="readonly">
+              {{ graciaLabel() }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label>&nbsp;</label>
+            <small class="hint">
+              Para cambiar moneda/tasa/capitalización/gracia,
+              entra a <b>Configuración</b> (solo Admin).
+            </small>
+          </div>
+        </div>
+
+        <!-- ⚠️ VALIDACIÓN VISUAL -->
+        <div
+          class="alert error"
+          *ngIf="
+            config &&
+            config.graciaTipo !== 'NINGUNA' &&
+            (config.graciaPeriodos ?? 0) >
+              (form.get('plazoMeses')?.value ?? 0)
+          "
+        >
+          La gracia configurada ({{ config.graciaPeriodos }})
+          no puede ser mayor que el plazo
+          ({{ form.get('plazoMeses')?.value }}).
+        </div>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button
+            class="btn"
+            type="submit"
+            [disabled]="simulating || loading || saving"
+          >
+            {{ simulating ? 'Simulando...' : 'Simular' }}
+          </button>
+
+          <button
+            class="btn secondary"
+            type="button"
+            (click)="saveOperacion()"
+            [disabled]="!result || simulating || loading || saving"
+          >
+            {{ saving ? 'Guardando...' : 'Guardar operación' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ========================= RESULTADO ========================= -->
+    <section class="card">
+      <h2>Resultado</h2>
+
+      <div *ngIf="!result" class="empty">
+        <p>Aún no hay simulación.</p>
+      </div>
+
+      <div *ngIf="result" class="kpis">
+        <div class="kpi">
+          <div class="kpi-title">Cuota</div>
+          <div class="kpi-value">{{ result.cuotaFija ?? 0 }}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">VAN</div>
+          <div class="kpi-value">{{ result.van ?? 0 }}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">TIR</div>
+          <div class="kpi-value">{{ result.tir ?? 0 }}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">TCEA</div>
+          <div class="kpi-value">{{ result.tcea ?? 0 }}</div>
+        </div>
+      </div>
+
+      <div class="table-wrap" *ngIf="result?.cronograma?.length">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Saldo Inicial</th>
+            <th>Interés</th>
+            <th>Amortización</th>
+            <th>Cuota</th>
+            <th>Saldo Final</th>
+            <th>Gracia</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+            *ngFor="let c of result!.cronograma!; trackBy: trackByCuota"
+          >
+            <td>{{ c.numeroCuota }}</td>
+            <td>{{ c.saldoInicial }}</td>
+            <td>{{ c.interes }}</td>
+            <td>{{ c.amortizacion }}</td>
+            <td>{{ c.cuotaTotal }}</td>
+            <td>{{ c.saldoFinal }}</td>
+            <td>
+              <span *ngIf="c.esGraciaTotal">Total</span>
+              <span *ngIf="!c.esGraciaTotal && c.esGraciaParcial">
+                  Parcial
+                </span>
+              <span *ngIf="!c.esGraciaTotal && !c.esGraciaParcial">
+                  -
+                </span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

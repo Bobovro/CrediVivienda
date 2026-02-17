@@ -1,69 +1,125 @@
-<div class="wrap">
-  <div class="head">
-    <h2>Configuración</h2>
-    <p>Define valores por defecto para la simulación MiVivienda.</p>
-  </div>
-
-  <div class="card">
-    <form [formGroup]="form" class="grid">
-      <div>
-        <label>Moneda por defecto</label>
-        <select formControlName="monedaDefault">
-          <option value="PEN">Soles (PEN)</option>
-          <option value="USD">Dólares (USD)</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Tipo de tasa por defecto</label>
-        <select formControlName="tipoTasaDefault">
-          <option value="EFECTIVA">Efectiva</option>
-          <option value="NOMINAL">Nominal</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Capitalización (solo si nominal)</label>
-        <select formControlName="capitalizacion">
-          <option value="DIARIA">Diaria</option>
-          <option value="MENSUAL">Mensual</option>
-          <option value="ANUAL">Anual</option>
-        </select>
-
-        <small *ngIf="form.get('tipoTasaDefault')?.value !== 'NOMINAL'">
-          Se usa solo cuando la tasa es nominal.
-        </small>
-      </div>
-
-      <div>
-        <label>Tipo de gracia</label>
-        <select formControlName="graciaTipo">
-          <option value="NINGUNA">Ninguna</option>
-          <option value="TOTAL">Total</option>
-          <option value="PARCIAL">Parcial</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Períodos de gracia (0–60)</label>
-        <input type="number" formControlName="graciaPeriodos" />
-
-        <small
-          *ngIf="
-            form.get('graciaPeriodos')?.touched &&
-            form.get('graciaPeriodos')?.invalid
-          "
-        >
-          Número inválido.
-        </small>
-      </div>
-    </form>
-
-    <div class="actions">
-      <button type="button" (click)="save()">Guardar</button>
-      <button type="button" class="ghost" (click)="reset()">Restaurar</button>
+<!-- home-config.html -->
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Configuración</h1>
+      <p class="subtitle">
+        Define valores por defecto para la simulación MiVivienda.
+      </p>
     </div>
-
-    <div class="ok" *ngIf="savedMsg">{{ savedMsg }}</div>
   </div>
+
+  <!-- Mensajes -->
+  <div class="alert error" *ngIf="errorMsg">
+    {{ errorMsg }}
+  </div>
+
+  <div class="alert ok" *ngIf="okMsg">
+    {{ okMsg }}
+  </div>
+
+  <section class="card">
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+
+      <div class="grid">
+
+        <!-- MONEDA -->
+        <div class="field">
+          <label>Moneda por defecto</label>
+          <select formControlName="monedaDefault">
+            <option *ngFor="let m of monedas" [value]="m.value">
+              {{ m.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- TIPO TASA -->
+        <div class="field">
+          <label>Tipo de tasa por defecto</label>
+          <select formControlName="tipoTasaDefault">
+            <option *ngFor="let t of tiposTasa" [value]="t.value">
+              {{ t.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- CAPITALIZACIÓN -->
+        <div class="field">
+          <label>Capitalización (solo si nominal)</label>
+          <select formControlName="capitalizacion">
+            <option *ngFor="let c of caps" [value]="c.value">
+              {{ c.label }}
+            </option>
+          </select>
+          <small class="hint">
+            Se usa solo cuando la tasa es nominal.
+          </small>
+        </div>
+
+        <!-- TIPO GRACIA -->
+        <div class="field">
+          <label>Tipo de gracia</label>
+          <select formControlName="graciaTipo">
+            <option *ngFor="let g of gracias" [value]="g.value">
+              {{ g.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- PERIODOS -->
+        <div class="field span-2">
+          <label>Periodos de gracia (0–60)</label>
+          <input
+            type="number"
+            formControlName="graciaPeriodos"
+            min="0"
+            max="60"
+          />
+          <small
+            class="err"
+            *ngIf="form.get('graciaPeriodos')?.touched && form.get('graciaPeriodos')?.invalid"
+          >
+            Debe estar entre 0 y 60.
+          </small>
+        </div>
+
+      </div>
+
+      <!-- BOTONES -->
+      <div class="actions">
+
+        <!-- SOLO ADMIN -->
+        <button
+          *ngIf="canEdit"
+          class="btn"
+          type="submit"
+          [disabled]="saving || loading"
+        >
+          {{ saving ? 'Guardando...' : 'Guardar' }}
+        </button>
+
+        <button
+          *ngIf="canEdit"
+          class="btn secondary"
+          type="button"
+          (click)="restore()"
+          [disabled]="saving || loading"
+        >
+          Restaurar
+        </button>
+
+        <!-- TODOS -->
+        <button
+          class="btn secondary"
+          type="button"
+          (click)="loadConfig()"
+          [disabled]="saving || loading"
+        >
+          {{ loading ? 'Cargando...' : 'Recargar' }}
+        </button>
+
+      </div>
+
+    </form>
+  </section>
 </div>

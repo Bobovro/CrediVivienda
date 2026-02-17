@@ -1,0 +1,99 @@
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="subtitle">
+        Desde aquí podrás registrar clientes, unidades y simular créditos.
+      </p>
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" type="button" (click)="load()" [disabled]="loading">
+        {{ loading ? 'Cargando...' : 'Recargar' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <!-- DEBUG -->
+  <div class="alert ok" style="margin-bottom: 16px;">
+    <b>Debug:</b>
+    Status: <b>{{ debug.lastStatus }}</b> ·
+    Tiempo: <b>{{ debug.ms }}ms</b> ·
+    Items: <b>{{ debug.count }}</b>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-title">Operaciones</div>
+      <div class="kpi-value">{{ totalOperaciones }}</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-title">Monto total</div>
+      <div class="kpi-value">{{ montoTotal }}</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-title">Intereses totales</div>
+      <div class="kpi-value">{{ interesesTotales }}</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-title">TCEA prom.</div>
+      <div class="kpi-value">{{ promTcea }}</div>
+    </div>
+  </div>
+
+  <div class="alert error" *ngIf="!loading && !errorMsg && totalOperaciones === 0">
+    No hay operaciones guardadas todavía. Guarda una operación desde <b>Simulación</b>.
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Operaciones por mes</h2>
+      <canvas baseChart [type]="opsChartType" [data]="opsChartData" [options]="opsChartOptions"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Monto total por mes</h2>
+      <canvas baseChart [type]="montoChartType" [data]="montoChartData" [options]="montoChartOptions"></canvas>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Últimas operaciones</h2>
+
+    <div *ngIf="!ultimas.length" class="empty">
+      <p>No hay operaciones aún.</p>
+    </div>
+
+    <div class="table-wrap" *ngIf="ultimas.length">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Plazo</th>
+          <th>Moneda</th>
+          <th>TCEA</th>
+          <th>VAN</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let p of ultimas">
+          <td class="mono">#{{ p.id }}</td>
+          <td>{{ p.fechaSimulacion ?? '-' }}</td>
+          <td class="num">{{ p.montoPrestamo }}</td>
+          <td class="num">{{ p.plazoMeses }}</td>
+          <td>{{ p.moneda }}</td>
+          <td class="num">{{ p.tcea ?? 0 }}</td>
+          <td class="num">{{ p.van ?? 0 }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

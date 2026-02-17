@@ -26,10 +26,6 @@ export class Register {
     this.form = this.fb.group({
       dni: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      nombres: ['', [Validators.required]],
-      apellidos: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      telefono: ['', [Validators.required]],
     });
   }
 

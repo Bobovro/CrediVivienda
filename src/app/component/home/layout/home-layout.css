@@ -1,24 +1,35 @@
+/* ===== Contenedor general: SOLO el contenido scrollea ===== */
 .layout{
   display:flex;
-  min-height:100vh;
+  height:100vh;           /* clave */
+  overflow:hidden;        /* clave: evita scroll del layout */
   background:#f5f6fa;
 }
 
+/* ===== Sidebar (desktop) ===== */
 .sidebar{
-  width:260px;
+  width:210px;
   padding:16px;
   background:#0b1220;
   color:#e5e7eb;
   display:flex;
   flex-direction:column;
-  gap:16px;
+  gap:14px;
+
+  height:100vh;           /* clave */
+  overflow:hidden;        /* clave: NO scroll dentro de sidebar */
+  flex: 0 0 auto;
 }
 
+/* brand */
 .brand{
   display:flex;
   align-items:center;
   gap:10px;
+  position:relative;
+  flex: 0 0 auto;
 }
+
 .logo{
   width:36px;
   height:36px;
@@ -30,19 +41,29 @@
 }
 .title{ font-weight:900; }
 
+/* ===== NAV: ocupa el espacio, pero SIN overflow ===== */
+.nav-wrap{
+  flex: 1 1 auto;
+  overflow:hidden;        /* clave */
+  padding-right: 0;
+}
+
 .nav{
   display:flex;
   flex-direction:column;
   gap:8px;
-  flex:1;
+  padding:0 0 35px 0;
 }
 
+/* links más compactos (para que entren en pantalla) */
 .nav a{
   color:#e5e7eb;
   text-decoration:none;
-  padding:10px 12px;
+  padding:9px 12px;
   border-radius:10px;
   transition: background .15s ease;
+  font-size:14px;
+  line-height:1.2;
 }
 .nav a:hover{ background: rgba(255,255,255,.08); }
 .nav a.active{ background: rgba(255,255,255,.12); }
@@ -53,18 +74,127 @@
   margin: 8px 0;
 }
 
+/* ===== Logout: SIEMPRE visible abajo ===== */
 .logout{
   width:100%;
   border:none;
-  border-radius:10px;
-  padding:10px;
+  border-radius:12px;
+  padding:12px 10px;
   cursor:pointer;
   background:#1d4ed8;
   color:#fff;
   font-weight:900;
+  margin-top: auto;        /* clave: empuja al fondo */
+  flex: 0 0 auto;
 }
 
+/* ===== Content: aquí sí hay scroll ===== */
 .content{
   flex:1;
+  min-width:0;
+  height:100vh;           /* clave */
+  overflow:auto;          /* clave: scroll solo aquí */
   padding:18px;
+}
+
+/* ===== TOPBAR (solo mobile) ===== */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  height:56px;
+  background:#0b1220;
+  color:#e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  flex: 0 0 auto;
+}
+
+.topbar-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+}
+
+.logo-sm{
+  width:30px;
+  height:30px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  background: linear-gradient(180deg, #1d4ed8, #60a5fa);
+  font-weight:900;
+  font-size:12px;
+}
+
+.icon-btn{
+  border:none;
+  background: rgba(255,255,255,.10);
+  color:#fff;
+  border-radius:10px;
+  padding:8px 10px;
+  cursor:pointer;
+  font-weight:900;
+}
+
+.icon-close{
+  position:absolute;
+  right:0;
+  top:0;
+  border:none;
+  background: rgba(255,255,255,.10);
+  color:#fff;
+  border-radius:10px;
+  padding:8px 10px;
+  cursor:pointer;
+}
+
+/* ===== MOBILE ===== */
+.layout.mobile{
+  flex-direction:column;
+  height:100vh;
+  overflow:hidden;
+}
+
+.layout.mobile .content{
+  padding:14px;
+  height: calc(100vh - 56px);  /* topbar */
+  overflow:auto;
+}
+
+/* drawer */
+.layout.mobile .sidebar{
+  position:fixed;
+  top:0;
+  left:0;
+  height:100vh;
+  width:260px;
+  z-index:60;
+
+  transform: translateX(-110%);
+  transition: transform .18s ease;
+}
+
+.layout.mobile .sidebar.open{
+  transform: translateX(0);
+}
+
+/* overlay */
+.overlay{
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,.35);
+  z-index:55;
+}
+
+/* ===== Extra: pantallas bajitas (evita que “se corte”) ===== */
+@media (max-height: 740px){
+  .sidebar{ padding:12px; gap:10px; }
+  .nav a{ padding:8px 10px; font-size:13px; }
+  .logout{ padding:10px; border-radius:10px; }
+  .logo{ width:34px; height:34px; border-radius:10px; }
 }

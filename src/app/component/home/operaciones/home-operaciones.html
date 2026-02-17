@@ -1,1 +1,158 @@
-<p>operaciones works!</p>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Operaciones</h1>
+      <p class="subtitle">Lista de operaciones guardadas (préstamos) y su cronograma.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" type="button" (click)="bootstrap()" [disabled]="loading || deletingId !== null">
+        {{ loading ? 'Cargando...' : 'Recargar' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="alert ok" *ngIf="okMsg">{{ okMsg }}</div>
+
+  <div class="grid">
+    <!-- LISTA -->
+    <section class="card">
+      <h2>Lista</h2>
+
+      <div *ngIf="!prestamos?.length" class="empty">
+        <p>No hay operaciones guardadas aún.</p>
+      </div>
+
+      <div class="table-wrap" *ngIf="prestamos?.length">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Unidad</th>
+            <th>Monto</th>
+            <th>Plazo</th>
+            <th>Moneda</th>
+            <th>Tasa</th>
+            <th>Gracia</th>
+            <th>VAN</th>
+            <th>TIR</th>
+            <th>TCEA</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let p of prestamos; trackBy: trackByPrestamo" [class.active]="selected?.id === p.id">
+            <td class="mono">#{{ p.id }}</td>
+            <td>{{ clienteLabel(p.clienteId) }}</td>
+            <td>{{ unidadLabel(p.unidadInmobiliariaId) }}</td>
+            <td class="num">{{ p.montoPrestamo }}</td>
+            <td class="num">{{ p.plazoMeses }}</td>
+            <td>{{ monedaLabel(p.moneda) }}</td>
+            <td>
+              {{ tipoTasaLabel(p.tipoTasa) }}
+              <span class="muted" *ngIf="p.tipoTasa === 'NOMINAL'">({{ capLabel(p.capitalizacion) }})</span>
+            </td>
+            <td>{{ graciaResumen(p) }}</td>
+            <td class="num">{{ p.van ?? 0 }}</td>
+            <td class="num">{{ p.tir ?? 0 }}</td>
+            <td class="num">{{ p.tcea ?? 0 }}</td>
+
+            <td class="col-actions">
+              <button class="btn tiny" type="button" (click)="openDetail(p)" [disabled]="loading">
+                Ver
+              </button>
+              <button
+                class="btn tiny danger"
+                type="button"
+                (click)="deletePrestamo(p)"
+                [disabled]="deletingId === p.id || loading"
+              >
+                {{ deletingId === p.id ? 'Eliminando...' : 'Eliminar' }}
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- DETALLE -->
+    <section class="card">
+      <h2>Detalle</h2>
+
+      <div *ngIf="!selected" class="empty">
+        <p>Selecciona una operación y presiona <b>Ver</b>.</p>
+      </div>
+
+      <div *ngIf="selected" class="detail">
+        <div class="detail-head">
+          <div>
+            <div class="detail-title">Operación #{{ selected.id }}</div>
+            <div class="detail-sub">
+              {{ clienteLabel(selected.clienteId) }} · {{ unidadLabel(selected.unidadInmobiliariaId) }}
+            </div>
+          </div>
+
+          <button class="btn secondary tiny" type="button" (click)="closeDetail()">Cerrar</button>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kpi-title">Cuota</div>
+            <div class="kpi-value">{{ selected.cuotaFija ?? 0 }}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-title">Intereses</div>
+            <div class="kpi-value">{{ selected.interesesTotales ?? 0 }}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-title">Total pagado</div>
+            <div class="kpi-value">{{ selected.montoTotalPagado ?? 0 }}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-title">TCEA</div>
+            <div class="kpi-value">{{ selected.tcea ?? 0 }}</div>
+          </div>
+        </div>
+
+        <div class="table-wrap" *ngIf="selected.cronograma?.length">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Saldo Inicial</th>
+              <th>Interés</th>
+              <th>Amortización</th>
+              <th>Cuota</th>
+              <th>Saldo Final</th>
+              <th>Gracia</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let c of selected.cronograma; trackBy: trackByCuota">
+              <td class="num">{{ c.numeroCuota }}</td>
+              <td class="num">{{ c.saldoInicial }}</td>
+              <td class="num">{{ c.interes }}</td>
+              <td class="num">{{ c.amortizacion }}</td>
+              <td class="num">{{ c.cuotaTotal }}</td>
+              <td class="num">{{ c.saldoFinal }}</td>
+              <td>
+                <span *ngIf="c.esGraciaTotal">Total</span>
+                <span *ngIf="!c.esGraciaTotal && c.esGraciaParcial">Parcial</span>
+                <span *ngIf="!c.esGraciaTotal && !c.esGraciaParcial">-</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="selected && (!selected.cronograma || selected.cronograma.length === 0)" class="empty">
+          <p>Sin cronograma (o aún cargando detalle).</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

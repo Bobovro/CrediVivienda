@@ -1,13 +1,22 @@
-import { Component } from '@angular/core';
+// home-config.ts
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  ReactiveFormsModule,
   FormBuilder,
-  Validators,
   FormGroup,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
-import { ConfigService } from '../../../services/config.service';
-import { AppConfig } from '../../../model/config.model';
+import { finalize } from 'rxjs/operators';
+
+import { AppConfigService } from '../../../services/config.service';
+import {
+  AppConfig,
+  Moneda,
+  TipoTasa,
+  Capitalizacion,
+  GraciaTipo
+} from '../../../model/config.model';
 
 @Component({
   selector: 'app-home-config',
@@ -16,86 +25,246 @@ import { AppConfig } from '../../../model/config.model';
   templateUrl: './home-config.html',
   styleUrls: ['./home-config.css'],
 })
-export class HomeConfig {
-  savedMsg: string = '';
+export class HomeConfig implements OnInit {
+  loading = false;
+  saving = false;
 
-  // ✅ IMPORTANTE: NO usamos this.fb aquí para evitar TS2729
+  errorMsg = '';
+  okMsg = '';
+
   form!: FormGroup;
+  private lastLoaded!: AppConfig;
 
-  constructor(private fb: FormBuilder, private cfg: ConfigService) {
-    // ✅ ahora sí, ya existe this.fb
+  // ✅ Solo admin puede editar
+  canEdit = true;
+
+  monedas: { value: Moneda; label: string }[] = [
+    { value: 'PEN', label: 'Soles (PEN)' },
+    { value: 'USD', label: 'Dólares (USD)' },
+  ];
+
+  tiposTasa: { value: TipoTasa; label: string }[] = [
+    { value: 'EFECTIVA', label: 'Efectiva' },
+    { value: 'NOMINAL', label: 'Nominal' },
+  ];
+
+  caps: { value: Capitalizacion; label: string }[] = [
+    { value: 'DIARIA', label: 'Diaria' },
+    { value: 'MENSUAL', label: 'Mensual' },
+    { value: 'ANUAL', label: 'Anual' },
+  ];
+
+  gracias: { value: GraciaTipo; label: string }[] = [
+    { value: 'NINGUNA', label: 'Ninguna' },
+    { value: 'TOTAL', label: 'Total' },
+    { value: 'PARCIAL', label: 'Parcial' },
+  ];
+
+  constructor(
+    private fb: FormBuilder,
+    private configService: AppConfigService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.form = this.fb.group({
       monedaDefault: ['PEN', [Validators.required]],
       tipoTasaDefault: ['EFECTIVA', [Validators.required]],
-      capitalizacion: [{ value: 'MENSUAL', disabled: true }], // por defecto deshabilitado si es efectiva
+      capitalizacion: [{ value: 'MENSUAL', disabled: true }], // solo si NOMINAL
       graciaTipo: ['NINGUNA', [Validators.required]],
       graciaPeriodos: [0, [Validators.required, Validators.min(0), Validators.max(60)]],
     });
 
-    // cargar config guardada
-    const current: AppConfig = this.cfg.get();
-    this.form.patchValue(current as any);
+    // ✅ Regla UI: capitalización solo si NOMINAL
+    this.form.get('tipoTasaDefault')?.valueChanges.subscribe((tipo: TipoTasa) => {
+      const capCtrl = this.form.get('capitalizacion');
+      if (!capCtrl) return;
 
-    // habilitar/deshabilitar capitalización según tipo tasa
-    this.applyCapitalizacionRules(this.form.get('tipoTasaDefault')?.value);
+      if (tipo === 'NOMINAL') {
+        capCtrl.enable({ emitEvent: false });
+        if (!capCtrl.value) capCtrl.setValue('MENSUAL', { emitEvent: false });
+      } else {
+        capCtrl.setValue(null, { emitEvent: false });
+        capCtrl.disable({ emitEvent: false });
+      }
 
-    // escuchar cambios
-    this.form.get('tipoTasaDefault')?.valueChanges.subscribe((tipo) => {
-      this.applyCapitalizacionRules(tipo);
+      // si es USER, lo mantenemos readonly sí o sí
+      if (!this.canEdit) this.form.disable({ emitEvent: false });
+
+      this.cdr.detectChanges();
+    });
+
+    // ✅ UX: al tocar el formulario, limpiar mensajes
+    this.form.valueChanges.subscribe(() => {
+      this.errorMsg = '';
+      this.okMsg = '';
+      this.cdr.detectChanges();
     });
   }
 
-  private applyCapitalizacionRules(tipo: 'EFECTIVA' | 'NOMINAL') {
-    const cap = this.form.get('capitalizacion');
+  ngOnInit(): void {
+    // ✅ recalcula permisos aquí (a veces el token se setea después del constructor)
+    this.canEdit = this.isAdminFromToken();
+    this.applyEditMode();
+    this.loadConfig();
+  }
 
-    if (tipo === 'NOMINAL') {
-      cap?.enable({ emitEvent: false });
-      cap?.setValidators([Validators.required]);
+  // ✅ Aplica modo edición/lectura sin romper la regla de capitalización
+  private applyEditMode() {
+    if (!this.canEdit) {
+      this.form.disable({ emitEvent: false });
     } else {
-      cap?.clearValidators();
-      cap?.setValue('MENSUAL', { emitEvent: false });
-      cap?.disable({ emitEvent: false });
-    }
+      // habilita todo...
+      this.form.enable({ emitEvent: false });
 
-    cap?.updateValueAndValidity({ emitEvent: false });
+      // ...pero respeta la regla: capitalización solo si NOMINAL
+      const tipo = this.form.get('tipoTasaDefault')?.value as TipoTasa;
+      const capCtrl = this.form.get('capitalizacion');
+      if (tipo !== 'NOMINAL') {
+        capCtrl?.disable({ emitEvent: false });
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+  // ✅ Lee roles del JWT (MUY robusto)
+  private isAdminFromToken(): boolean {
+    const token =
+      localStorage.getItem('token') ||
+      localStorage.getItem('access_token') ||
+      localStorage.getItem('jwt');
+
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      // ✅ FIX rápido: si el usuario es "admin", permitir edición
+      if ((payload?.sub || '').toString().toLowerCase() === 'admin') return true;
+
+      // (si en algún momento agregas roles al JWT, esto ya quedará listo)
+      const roles: string[] =
+        payload?.roles ||
+        payload?.authorities ||
+        payload?.scope?.split?.(' ') ||
+        [];
+
+      return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN');
+    } catch {
+      return false;
+    }
+  }
+
+
+
+  private toErrorMsg(err: any): string {
+    const e = err?.error ?? err;
+    if (typeof e === 'string') return e;
+    if (e?.message && typeof e.message === 'string') return e.message;
+    try { return JSON.stringify(e); } catch { return 'Ocurrió un error'; }
+  }
+
+  loadConfig() {
+    this.loading = true;
+    this.errorMsg = '';
+    this.okMsg = '';
+    this.cdr.detectChanges();
+
+    this.configService.getConfig()
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (cfg: AppConfig) => {
+          this.lastLoaded = cfg;
+
+          this.form.patchValue({
+            monedaDefault: cfg.monedaDefault,
+            tipoTasaDefault: cfg.tipoTasaDefault,
+            capitalizacion: cfg.capitalizacion ?? null,
+            graciaTipo: cfg.graciaTipo,
+            graciaPeriodos: cfg.graciaPeriodos ?? 0,
+          }, { emitEvent: false });
+
+          // aplica regla capitalización
+          const capCtrl = this.form.get('capitalizacion');
+          if (cfg.tipoTasaDefault === 'NOMINAL') capCtrl?.enable({ emitEvent: false });
+          else capCtrl?.disable({ emitEvent: false });
+
+          // ✅ vuelve a aplicar permisos (clave)
+          this.applyEditMode();
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.errorMsg = this.toErrorMsg(err) || 'No se pudo cargar configuración';
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   save() {
-    this.savedMsg = '';
-
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+    if (!this.canEdit) {
+      this.errorMsg = 'No tienes permisos para modificar la configuración.';
+      this.cdr.detectChanges();
       return;
     }
 
-    const value = this.form.getRawValue() as AppConfig;
+    this.errorMsg = '';
+    this.okMsg = '';
 
-    // si es efectiva, capitalizacion no aplica
-    if (value.tipoTasaDefault !== 'NOMINAL') {
-      delete (value as any).capitalizacion;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.cdr.detectChanges();
+      return;
     }
 
-    this.cfg.set(value);
+    this.saving = true;
+    this.cdr.detectChanges();
 
-    this.savedMsg = 'Configuración guardada ✅';
-    setTimeout(() => (this.savedMsg = ''), 2500);
+    const raw = this.form.getRawValue();
+    const payload: AppConfig = { ...(this.lastLoaded ?? ({} as any)), ...raw };
+
+    this.configService.updateConfig(payload)
+      .pipe(finalize(() => {
+        this.saving = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (saved) => {
+          this.lastLoaded = saved;
+          this.okMsg = 'Configuración guardada';
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.errorMsg = this.toErrorMsg(err) || 'No se pudo guardar configuración';
+          this.cdr.detectChanges();
+        },
+      });
   }
 
-  reset() {
-    this.cfg.reset();
+  restore() {
+    if (!this.canEdit) return;
 
-    const current: AppConfig = this.cfg.get();
-    this.form.reset({
-      monedaDefault: current.monedaDefault,
-      tipoTasaDefault: current.tipoTasaDefault,
-      capitalizacion: current.capitalizacion ?? 'MENSUAL',
-      graciaTipo: current.graciaTipo,
-      graciaPeriodos: current.graciaPeriodos,
-    });
+    this.errorMsg = '';
+    this.okMsg = '';
 
-    this.applyCapitalizacionRules(this.form.get('tipoTasaDefault')?.value);
+    if (!this.lastLoaded) {
+      this.loadConfig();
+      return;
+    }
 
-    this.savedMsg = 'Configuración restaurada ✅';
-    setTimeout(() => (this.savedMsg = ''), 2500);
+    this.form.patchValue({
+      monedaDefault: this.lastLoaded.monedaDefault,
+      tipoTasaDefault: this.lastLoaded.tipoTasaDefault,
+      capitalizacion: this.lastLoaded.capitalizacion ?? null,
+      graciaTipo: this.lastLoaded.graciaTipo,
+      graciaPeriodos: this.lastLoaded.graciaPeriodos ?? 0,
+    }, { emitEvent: false });
+
+    const capCtrl = this.form.get('capitalizacion');
+    if (this.lastLoaded.tipoTasaDefault === 'NOMINAL') capCtrl?.enable({ emitEvent: false });
+    else capCtrl?.disable({ emitEvent: false });
+
+    this.applyEditMode();
   }
 }
