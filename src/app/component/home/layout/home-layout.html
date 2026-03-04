@@ -27,17 +27,17 @@
     <div class="nav-wrap">
       <nav class="nav">
         <a routerLink="/home/dashboard" routerLinkActive="active" (click)="onNavClick()">Dashboard</a>
-        <a routerLink="/home/clientes" routerLinkActive="active" (click)="onNavClick()">HomeClientes</a>
-        <a routerLink="/home/unidades" routerLinkActive="active" (click)="onNavClick()">HomeUnidades</a>
+        <a routerLink="/home/clientes" routerLinkActive="active" (click)="onNavClick()">Clientes</a>
+        <a routerLink="/home/unidades" routerLinkActive="active" (click)="onNavClick()">Unidades</a>
         <a routerLink="/home/simulacion" routerLinkActive="active" (click)="onNavClick()">Simulación</a>
-        <a routerLink="/home/operaciones" routerLinkActive="active" (click)="onNavClick()">HomeOperaciones</a>
+        <a routerLink="/home/operaciones" routerLinkActive="active" (click)="onNavClick()">Operaciones</a>
         <a routerLink="/home/config" routerLinkActive="active" (click)="onNavClick()">Configuración</a>
 
         <div class="sep"></div>
 
         <a *ngIf="isAdmin()" routerLink="/home/admin" routerLinkActive="active"
            [routerLinkActiveOptions]="{ exact: true }">
-          HomeAdmin
+          Dashboard
         </a>
 
         <a *ngIf="isAdmin()"

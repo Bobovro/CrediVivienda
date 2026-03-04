@@ -1,3 +1,4 @@
+// home-clientes.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -7,7 +8,6 @@ import {
   Validators,
   FormsModule
 } from '@angular/forms';
-
 import { finalize } from 'rxjs/operators';
 
 import { ClienteService } from '../../../services/cliente.service';
@@ -28,10 +28,12 @@ export class HomeClientes implements OnInit {
   okMsg = '';
 
   editingId: number | null = null;
-
   form!: FormGroup;
 
   query = '';
+
+  // ✅ Panel de instrucciones
+  helpOpen = false;
 
   constructor(
     private fb: FormBuilder,
@@ -51,6 +53,10 @@ export class HomeClientes implements OnInit {
 
   ngOnInit(): void {
     this.loadClientes();
+  }
+
+  toggleHelpPanel() {
+    this.helpOpen = !this.helpOpen;
   }
 
   get filteredClientes(): Cliente[] {
@@ -163,7 +169,6 @@ export class HomeClientes implements OnInit {
         .subscribe({
           next: (created: Cliente) => {
             this.clientes = [created, ...this.clientes];
-
             this.okMsg = 'Cliente creado correctamente';
             this.resetFormOnly();
             this.cdr.detectChanges();
@@ -176,6 +181,7 @@ export class HomeClientes implements OnInit {
       return;
     }
 
+    // UPDATE
     this.clienteService.update(this.editingId, payload)
       .pipe(finalize(() => {
         this.saving = false;

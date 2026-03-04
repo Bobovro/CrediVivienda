@@ -38,6 +38,9 @@ export class HomeSimulacion implements OnInit {
 
   result: Prestamo | null = null;
 
+  // ✅ Panel de instrucciones
+  helpOpen = false;
+
   monedas = [
     { value: 'PEN', label: 'Soles (PEN)' },
     { value: 'USD', label: 'Dólares (USD)' },
@@ -105,6 +108,12 @@ export class HomeSimulacion implements OnInit {
 
   ngOnInit(): void {
     this.bootstrap();
+  }
+
+  // ✅ abre/cierra panel
+  toggleHelpPanel() {
+    this.helpOpen = !this.helpOpen;
+    this.cdr.detectChanges();
   }
 
   monedaLabel(value: any): string {

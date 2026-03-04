@@ -6,6 +6,19 @@
     </div>
 
     <div class="actions">
+
+      <!-- ✅ BOTÓN AYUDA -->
+      <button
+        class="helpTop"
+        type="button"
+        (click)="toggleHelpPanel()"
+        [attr.aria-expanded]="helpOpen"
+        aria-label="Abrir instrucciones"
+        title="Instrucciones"
+      >
+        ?
+      </button>
+
       <button class="btn secondary" type="button" (click)="bootstrap()" [disabled]="loading || deletingId !== null">
         {{ loading ? 'Cargando...' : 'Recargar' }}
       </button>
@@ -152,5 +165,65 @@
         </div>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- ✅ PANEL FLOTANTE (NO ACHICA NADA) -->
+<div class="helpOverlay" *ngIf="helpOpen">
+  <div class="helpPanel">
+    <div class="helpHeader">
+      <h3>INSTRUCCIONES</h3>
+
+      <button class="helpClose" type="button" (click)="toggleHelpPanel()" aria-label="Cerrar instrucciones">
+        ✕
+      </button>
+    </div>
+
+    <div class="helpBody">
+      <p class="helpIntro">
+        Esta pantalla muestra las <b>operaciones guardadas</b> (préstamos) y permite ver el <b>detalle</b> con su cronograma.
+      </p>
+
+      <div class="helpBlock">
+        <h4>📌 1) Lista de operaciones</h4>
+        <ul>
+          <li>La tabla contiene cliente, unidad, monto, plazo, tasa, gracia y métricas (VAN/TIR/TCEA).</li>
+          <li>La fila resaltada indica la operación seleccionada.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>👁️ 2) Ver detalle</h4>
+        <ul>
+          <li>Presiona <b>Ver</b> para cargar el detalle y mostrar el cronograma.</li>
+          <li>Si el cronograma ya está en memoria, no se vuelve a pedir al servidor.</li>
+          <li>En el cronograma se indica si la cuota es de <b>gracia total</b> o <b>parcial</b>.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>🧾 3) KPIs del préstamo</h4>
+        <ul>
+          <li><b>Cuota</b>: cuota fija del método francés (post-gracia).</li>
+          <li><b>Intereses</b> y <b>Total pagado</b>: sumatorias del cronograma.</li>
+          <li><b>TCEA</b>: tasa anual efectiva equivalente.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>🗑️ 4) Eliminar operación</h4>
+        <ul>
+          <li>Presiona <b>Eliminar</b> y confirma. No se puede deshacer.</li>
+          <li>Si la operación eliminada está en detalle, se cierra automáticamente.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>🔄 5) Recargar</h4>
+        <ul>
+          <li>Usa <b>Recargar</b> para actualizar lista, clientes y unidades.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>

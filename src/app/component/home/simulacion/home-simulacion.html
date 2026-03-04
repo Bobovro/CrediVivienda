@@ -8,6 +8,19 @@
     </div>
 
     <div class="actions">
+
+      <!-- ✅ BOTÓN AYUDA (panel flotante) -->
+      <button
+        class="helpTop"
+        type="button"
+        (click)="toggleHelpPanel()"
+        [attr.aria-expanded]="helpOpen"
+        aria-label="Abrir instrucciones"
+        title="Instrucciones"
+      >
+        ?
+      </button>
+
       <button
         class="btn secondary"
         type="button"
@@ -218,9 +231,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr
-            *ngFor="let c of result!.cronograma!; trackBy: trackByCuota"
-          >
+          <tr *ngFor="let c of result!.cronograma!; trackBy: trackByCuota">
             <td>{{ c.numeroCuota }}</td>
             <td>{{ c.saldoInicial }}</td>
             <td>{{ c.interes }}</td>
@@ -229,17 +240,78 @@
             <td>{{ c.saldoFinal }}</td>
             <td>
               <span *ngIf="c.esGraciaTotal">Total</span>
-              <span *ngIf="!c.esGraciaTotal && c.esGraciaParcial">
-                  Parcial
-                </span>
-              <span *ngIf="!c.esGraciaTotal && !c.esGraciaParcial">
-                  -
-                </span>
+              <span *ngIf="!c.esGraciaTotal && c.esGraciaParcial">Parcial</span>
+              <span *ngIf="!c.esGraciaTotal && !c.esGraciaParcial">-</span>
             </td>
           </tr>
           </tbody>
         </table>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- ✅ PANEL FLOTANTE (NO ACHICA NADA) -->
+<div class="helpOverlay" *ngIf="helpOpen">
+  <div class="helpPanel">
+
+    <div class="helpHeader">
+      <h3>INSTRUCCIONES</h3>
+
+      <button class="helpClose" type="button" (click)="toggleHelpPanel()" aria-label="Cerrar instrucciones">
+        ✕
+      </button>
+    </div>
+
+    <div class="helpBody">
+
+      <p class="helpIntro">
+        Esta pantalla permite <b>simular</b> un préstamo hipotecario con el método francés vencido,
+        considerando la configuración (moneda, tasa, capitalización y gracia).
+      </p>
+
+      <div class="helpBlock">
+        <h4>✅ 1) Selecciona datos base</h4>
+        <ul>
+          <li><b>Cliente</b>: elige un cliente registrado.</li>
+          <li><b>Unidad inmobiliaria</b>: elige la unidad que desea comprar.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>💰 2) Ingresa valores</h4>
+        <ul>
+          <li><b>Monto préstamo</b>: importe a financiar (mayor a 0).</li>
+          <li><b>Plazo</b>: meses del préstamo.</li>
+          <li><b>Tasa anual</b>: puedes ingresar <b>12</b> (12%) o <b>0.12</b> (12%).</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>⚙️ 3) Configuración (solo Admin)</h4>
+        <ul>
+          <li><b>Moneda</b>, <b>Tipo de tasa</b>, <b>Capitalización</b> y <b>Gracia</b> vienen de Configuración.</li>
+          <li>Si la tasa es <b>Nominal</b>, se usa la capitalización.</li>
+          <li>La gracia no puede superar el plazo.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>📊 4) Resultados</h4>
+        <ul>
+          <li>Se muestran <b>Cuota</b>, <b>VAN</b>, <b>TIR</b> y <b>TCEA</b>.</li>
+          <li>El cronograma indica si una cuota es de <b>gracia total</b> o <b>parcial</b>.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>💾 5) Guardar operación</h4>
+        <ul>
+          <li>Primero presiona <b>Simular</b>.</li>
+          <li>Luego <b>Guardar operación</b> almacena el préstamo en la base de datos.</li>
+        </ul>
+      </div>
+
+    </div>
   </div>
 </div>

@@ -37,6 +37,9 @@ export class HomeOperaciones implements OnInit, OnDestroy {
   private detailSub?: Subscription;
   private deleteSub?: Subscription;
 
+  // ✅ Panel de instrucciones
+  helpOpen = false;
+
   constructor(
     private prestamoService: PrestamoService,
     private clienteService: ClienteService,
@@ -52,6 +55,11 @@ export class HomeOperaciones implements OnInit, OnDestroy {
     this.loadSub?.unsubscribe();
     this.detailSub?.unsubscribe();
     this.deleteSub?.unsubscribe();
+  }
+
+  toggleHelpPanel() {
+    this.helpOpen = !this.helpOpen;
+    this.repaint();
   }
 
   private repaint() {

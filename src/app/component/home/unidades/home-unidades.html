@@ -8,9 +8,23 @@
     </div>
 
     <div class="actions">
+
+      <!-- ✅ BOTÓN AYUDA (panel flotante) -->
+      <button
+        class="helpTop"
+        type="button"
+        (click)="toggleHelpPanel()"
+        [attr.aria-expanded]="helpOpen"
+        aria-label="Abrir instrucciones"
+        title="Instrucciones"
+      >
+        ?
+      </button>
+
       <button class="btn secondary" type="button" (click)="startCreate()">
         Nueva unidad
       </button>
+
       <button class="btn" type="button" (click)="loadUnidades()" [disabled]="loading">
         {{ loading ? 'Cargando...' : 'Refrescar' }}
       </button>
@@ -156,5 +170,56 @@
         </div>
       </ng-template>
     </section>
+  </div>
+</div>
+
+<!-- ✅ PANEL FLOTANTE (NO ACHICA NADA) -->
+<div class="helpOverlay" *ngIf="helpOpen">
+  <div class="helpPanel">
+
+    <div class="helpHeader">
+      <h3>INSTRUCCIONES</h3>
+
+      <button class="helpClose" type="button" (click)="toggleHelpPanel()" aria-label="Cerrar instrucciones">
+        ✕
+      </button>
+    </div>
+
+    <div class="helpBody">
+
+      <p class="helpIntro">
+        Registra aquí la unidad inmobiliaria que el cliente desea comprar. Esta unidad se usará luego en
+        <b>Operaciones</b> para simular el préstamo hipotecario.
+      </p>
+
+      <div class="helpBlock">
+        <h4>✅ Campos obligatorios</h4>
+        <ul>
+          <li><b>Proyecto</b>: nombre del proyecto (ej: Torre A).</li>
+          <li><b>Ubicación</b>: distrito/provincia (ej: San Miguel - Lima).</li>
+          <li><b>Valor del inmueble</b>: debe ser mayor a 0.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>🏠 Techo Propio</h4>
+        <ul>
+          <li>Marca <b>Aplica Techo Propio</b> si el inmueble puede recibir el bono.</li>
+          <li>Al activarlo, se habilita el campo <b>Bono Techo Propio</b> (monto en la misma moneda).</li>
+          <li>Si no aplica, el bono queda en 0 automáticamente.</li>
+        </ul>
+      </div>
+
+      <div class="helpBlock">
+        <h4>🛠 Acciones</h4>
+        <ul>
+          <li><b>Nueva unidad</b>: limpia el formulario.</li>
+          <li><b>Editar</b>: carga los datos de una unidad existente.</li>
+          <li><b>Eliminar</b>: borra la unidad registrada.</li>
+          <li><b>Refrescar</b>: vuelve a cargar la lista.</li>
+        </ul>
+      </div>
+
+    </div>
   </div>
 </div>

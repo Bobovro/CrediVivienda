@@ -34,6 +34,9 @@ export class HomeUnidades implements OnInit {
 
   form!: FormGroup;
 
+  // ✅ Panel de instrucciones
+  helpOpen = false;
+
   constructor(
     private fb: FormBuilder,
     private unidadService: UnidadInmobiliariaService,
@@ -65,8 +68,13 @@ export class HomeUnidades implements OnInit {
     this.loadUnidades();
   }
 
+  // ✅ abre/cierra panel
+  toggleHelpPanel() {
+    this.helpOpen = !this.helpOpen;
+    this.uiTick();
+  }
+
   private uiTick() {
-    // run dentro de Angular zone + fuerza detección
     this.zone.run(() => {
       this.cdr.detectChanges();
     });
